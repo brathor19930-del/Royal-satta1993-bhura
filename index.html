@@ -52,7 +52,7 @@
     .box { background: #262626; border: 1px solid #444; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #d4af37; border-radius: 6px; }
     .card-play-btn { background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 10px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; }
 
-    /* App Download Banner Styles (Header ke theek niche clear dikhega) */
+    /* App Download Banner Styles */
     .download-banner {
         position: fixed;
         top: 55px;
@@ -89,6 +89,7 @@
         text-decoration: none;
         font-weight: bold;
         font-size: 12px;
+        cursor: pointer;
     }
     .btn-close {
         background: transparent;
@@ -98,6 +99,62 @@
         cursor: pointer;
         padding: 2px 6px;
         font-weight: bold;
+    }
+
+    /* Custom Popup Modal with clear guide */
+    #downloadModal {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85);
+        z-index: 99999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .modal-box {
+        background: #1a1a1a;
+        border: 2px solid #d4af37;
+        border-radius: 15px;
+        max-width: 340px;
+        width: 100%;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+    }
+    .modal-box h3 {
+        color: #d4af37;
+        margin-bottom: 12px;
+        font-size: 20px;
+    }
+    .modal-box p {
+        color: #ccc;
+        font-size: 13px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+    .instruction-box {
+        background: #262626;
+        border: 1px dashed #d4af37;
+        padding: 10px;
+        border-radius: 8px;
+        color: #4caf50;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .modal-btn {
+        background: linear-gradient(90deg, #d4af37, #aa8c2c);
+        color: #000;
+        border: none;
+        padding: 12px 20px;
+        font-weight: bold;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        text-decoration: none;
+        display: inline-block;
     }
 
     /* Bottom Nav */
@@ -152,14 +209,26 @@
     <div class="wallet" id="userWalletDisplay">🪙 ₹0</div>
 </header>
 
-<!-- App Download Banner with Cross (❌) Button -->
+<!-- App Download Banner -->
 <div id="appDownloadBanner" class="download-banner">
     <div class="banner-content">
         <span>📱 <b>App Download</b> karein fast experience ke liye!</span>
         <div class="banner-buttons">
-            <a href="#" id="apkDownloadLink" class="btn-download" download>Download</a>
+            <button class="btn-download" onclick="openDownloadModal()">Download</button>
             <button onclick="closeBanner()" class="btn-close">❌</button>
         </div>
+    </div>
+</div>
+
+<!-- Custom User-Friendly Popup Modal with Guide -->
+<div id="downloadModal">
+    <div class="modal-box">
+        <h3>👑 Royal Satta 1993 App</h3>
+        <p>App download karne ke liye neeche button par click karein.</p>
+        <div class="instruction-box">
+            💡 <b>Note:</b> Pop-up aane par <b>'Download'</b> par click karein!
+        </div>
+        <a href="https://bucket.appilix.com/app-apk-7307a2df2e8049cc9c772cd1a8c3cfb5-1790203738.apk" class="modal-btn" target="_blank" onclick="closeModalAndProceed()">DOWNLOAD APK NOW</a>
     </div>
 </div>
 
@@ -248,8 +317,16 @@
         document.getElementById(viewId).classList.add('active');
     }
 
-    /* Cross dabane par banner ko gayab karne ka function */
     function closeBanner() {
+        document.getElementById('appDownloadBanner').style.display = 'none';
+    }
+
+    function openDownloadModal() {
+        document.getElementById('downloadModal').style.display = 'flex';
+    }
+
+    function closeModalAndProceed() {
+        document.getElementById('downloadModal').style.display = 'none';
         document.getElementById('appDownloadBanner').style.display = 'none';
     }
 
