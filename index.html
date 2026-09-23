@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Satta 1993 - Live Platform</title>
+    <meta name="theme-color" content="#121212">
+    <!-- Firebase SDK Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    body { background-color: #121212; color: #e0e0e0; padding-bottom: 90px; }
+    .header { background-color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
+    .menu-icon, .wallet { font-size: 22px; color: #d4af37; cursor: pointer; background: none; border: none; }
+    .logo { font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: 1.5px; }
+    .logo span { color: #d4af37; }
+    #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .auth-card { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; width: 100%; max-width: 360px; padding: 25px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.9); }
+    .auth-card h2 { color: #d4af37; margin-bottom: 20px; font-size: 22px; }
+    .auth-card input { width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; margin-bottom: 15px; text-align: center; }
+    .proceed-btn { width: 100%; background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 15px; font-weight: bold; border-radius: 10px; font-size: 16px; cursor: pointer; text-align: center; margin-bottom: 15px; }
+    
+    /* Sidebar */
+    .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; z-index: 3000; transition: 0.3s ease; border-right: 1px solid #333; }
+    .sidebar.active { left: 0; }
+    .sidebar-header { background: #222; padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333; }
+    .user-avatar { font-size: 24px; background: #d4af37; color: #000; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
+    .user-info .phone { font-weight: bold; color: #d4af37; font-size: 15px; }
+    .user-info .status { font-size: 11px; color: #4caf50; }
+    .close-sidebar-btn { margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+    .sidebar-links { list-style: none; padding: 10px 0; }
+    .sidebar-links li { padding: 15px 20px; border-bottom: 1px solid #262626; color: #ccc; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 12px; }
+    .sidebar-links li:hover { background: #2a2a2a; color: #d4af37; }
+    .sidebar-links .logout { color: #ff4d4d; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 2500; }
+    .overlay.active { display: block; }
+
+    .marquee-container { background-color: #cc0000; color: #ffffff; padding: 12px 0; font-size: 14px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 2px solid #ff4d4d; }
+    .container { padding: 15px; }
+    
+    /* Games */
+    .games-section h3 { color: #d4af37; margin-bottom: 15px; font-size: 17px; }
+    .game-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .game-title { font-weight: bold; font-size: 18px; color: #d4af37; }
+    .status-badge { font-size: 12px; padding: 5px 10px; border-radius: 6px; font-weight: bold; background: #1b5e20; color: #4caf50; }
+    .game-time { font-size: 13px; color: #aaa; margin-bottom: 15px; }
+    .game-footer-row { display: flex; justify-content: space-between; align-items: center; }
+    .game-numbers { display: flex; gap: 8px; }
+    .box { background: #262626; border: 1px solid #444; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #d4af37; border-radius: 6px; }
+    .card-play-btn { background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 10px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; }
+
+    /* Bottom Nav */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+    .nav-item { background: none; border: none; color: #888; font-size: 13px; text-align: center; cursor: pointer; font-weight: bold; }
+    .nav-item span { font-size: 18px; display: block; }
+    .nav-item.active { color: #d4af37; }
+    .main-view { display: none; }
+    .main-view.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="authView">
+    <div class="auth-card">
+        <h2>ROYAL SATTA 1993</h2>
+        <div id="stepPhone">
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Login karne ke liye mobile number dalein</p>
+            <input type="tel" id="loginPhoneInput" placeholder="Mobile Number (10 digits)" maxlength="10">
+            <button class="proceed-btn" onclick="sendOtp()">SEND OTP</button>
+        </div>
+        <div id="stepOtp" style="display: none;">
+            <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;">OTP bhej diya gaya hai</p>
+            <input type="text" id="loginOtpInput" placeholder="Enter 6-digit OTP" maxlength="6">
+            <button class="proceed-btn" onclick="verifyOtp()">VERIFY & LOGIN</button>
+        </div>
+        <div id="recaptcha-container"></div>
+    </div>
+</div>
+
+<div id="sidebarDrawer" class="sidebar">
+    <div class="sidebar-header">
+        <div class="user-avatar">👑</div>
+        <div class="user-info">
+            <div class="phone" id="sidebarPhoneDisplay">--</div>
+            <div class="status">● Cloud Active</div>
+        </div>
+        <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+    </div>
+    <ul class="sidebar-links">
+        <li onclick="switchTab('homeView'); toggleSidebar()">🏠 Home</li>
+        <li onclick="switchTab('historyView'); toggleSidebar()">📜 Bid History</li>
+        <li onclick="switchTab('profileView'); toggleSidebar()">👤 User Profile</li>
+        <li class="logout" onclick="logoutUser()">🚪 Logout</li>
+    </ul>
+</div>
+<div id="sidebarOverlay" class="overlay" onclick="toggleSidebar()"></div>
+
+<div id="homeView" class="main-view active">
+    <header class="header">
+        <button class="menu-icon" onclick="toggleSidebar()">☰</button>
+        <div class="logo">ROYAL SATTA <span>1993</span></div>
+        <div class="wallet" id="userWalletDisplay">🪙 ₹0</div>
+    </header>
+
+    <div class="marquee-container">
+        <marquee>🔥 रॉयल सट्टा 1993 में आपका स्वागत है! Jodi Rate: 10 ka 950 | Haruf Rate: 10 ka 95 🔥</marquee>
+    </div>
+
+    <main class="container">
+        <div class="games-section">
+            <h3>Live Market Games</h3>
+            <div class="game-card">
+                <div class="game-header">
+                    <span class="game-title">DISHAWAR</span>
+                    <span class="status-badge">OPEN</span>
+                </div>
+                <div class="game-time">Closing Time: 05:00 AM</div>
+                <div class="game-footer-row">
+                    <div class="game-numbers">
+                        <div class="box">--</div>
+                        <div class="box">--</div>
+                        <div class="box">--</div>
+                    </div>
+                    <button class="card-play-btn" onclick="placeBid('DISHAWAR')">PLAY</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="historyView" class="main-view">
+    <header class="header">
+        <button class="menu-icon" onclick="toggleSidebar()">☰</button>
+        <div class="logo">BID <span>HISTORY</span></div>
+        <div class="wallet">🪙 ₹0</div>
+    </header>
+    <div class="container">
+        <p style="text-align: center; color: #aaa; margin-top: 40px;">Aapki saari bids yahan database se sync hokar dikhengi.</p>
+    </div>
+</div>
+
+<div id="profileView" class="main-view">
+    <header class="header">
+        <button class="menu-icon" onclick="toggleSidebar()">☰</button>
+        <div class="logo">USER <span>PROFILE</span></div>
+        <div class="wallet">🪙 ₹0</div>
+    </header>
+    <div class="container" style="text-align: center; margin-top: 30px;">
+        <h3 style="color: #d4af37; margin-bottom: 10px;">Registered Phone</h3>
+        <p id="profilePhoneText" style="font-size: 18px; color: #fff;">--</p>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('homeView')"><span>🏠</span>Home</button>
+    <button class="nav-item" onclick="switchTab('historyView')"><span>📜</span>History</button>
+    <button class="nav-item" onclick="switchTab('profileView')"><span>👤</span>Profile</button>
+</nav>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUserPhone = "";
+
+    window.onload = function() {
+        try {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible'
+            });
+            window.recaptchaVerifier.render();
+        } catch (e) {
+            console.log("Recaptcha init note:", e);
+        }
+    };
+
+    function toggleSidebar() {
+        document.getElementById('sidebarDrawer').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function switchTab(viewId) {
+        document.querySelectorAll('.main-view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    function sendOtp() {
+        const phone = document.getElementById('loginPhoneInput').value.trim();
+        if(phone.length !== 10) {
+            alert('Kripya sahi 10 digit ka mobile number dalein');
+            return;
+        }
+        currentUserPhone = '+91' + phone;
+        const appVerifier = window.recaptchaVerifier;
+        
+        auth.signInWithPhoneNumber(currentUserPhone, appVerifier)
+            .then(function (confirmationResult) {
+                window.confirmationResult = confirmationResult;
+                document.getElementById('stepPhone').style.display = 'none';
+                document.getElementById('stepOtp').style.display = 'block';
+                alert('OTP bhej diya gaya hai!');
+            }).catch(function (error) {
+                console.error(error);
+                alert('SMS Error: ' + error.message);
+            });
+    }
+
+    function verifyOtp() {
+        const otp = document.getElementById('loginOtpInput').value.trim();
+        if(otp.length < 4) {
+            alert('Sahi OTP dalein');
+            return;
+        }
+        window.confirmationResult.confirm(otp).then(function (result) {
+            document.getElementById('authView').style.display = 'none';
+            document.getElementById('sidebarPhoneDisplay').innerText = currentUserPhone;
+            document.getElementById('profilePhoneText').innerText = currentUserPhone;
+            alert('Login Successful!');
+            syncUserToFirestore(currentUserPhone);
+            loadUserData(currentUserPhone);
+        }).catch(function (error) {
+            alert('Galat OTP! Kripya dobara koshish karein.');
+        });
+    }
+
+    function syncUserToFirestore(phone) {
+        db.collection("users").doc(phone).set({
+            phone: phone,
+            wallet: 0,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }
+
+    function loadUserData(phone) {
+        db.collection("users").doc(phone).onSnapshot((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const walletBal = data.wallet || 0;
+                document.getElementById('userWalletDisplay').innerText = '🪙 ₹' + walletBal;
+            }
+        });
+    }
+
+    function placeBid(gameName) {
+        const bidNum = prompt(gameName + " ke liye number dalein:");
+        const bidAmount = prompt("Amount dalein (₹):");
+        if(!bidNum || !bidAmount) return;
+
+        db.collection("bids").add({
+            phone: currentUserPhone,
+            game: gameName,
+            number: bidNum,
+            amount: Number(bidAmount),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert('Bid successfully place ho gayi aur database mein save ho gayi!');
+        }).catch((error) => {
+            alert('Error: ' + error.message);
+        });
+    }
+
+    function logoutUser() {
+        auth.signOut().then(() => {
+            location.reload();
+        });
+    }
+</script>
+</body>
+</html>
