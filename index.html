@@ -209,8 +209,8 @@
     <div class="wallet" id="userWalletDisplay">🪙 ₹0</div>
 </header>
 
-<!-- App Download Banner -->
-<div id="appDownloadBanner" class="download-banner">
+<!-- App Download Banner (Will hide automatically if already downloaded) -->
+<div id="appDownloadBanner" class="download-banner" style="display: none;">
     <div class="banner-content">
         <span>📱 <b>App Download</b> karein fast experience ke liye!</span>
         <div class="banner-buttons">
@@ -220,7 +220,7 @@
     </div>
 </div>
 
-<!-- Custom User-Friendly Popup Modal with Guide & Updated Link -->
+<!-- Custom User-Friendly Popup Modal -->
 <div id="downloadModal">
     <div class="modal-box">
         <h3>👑 Royal Satta 1993 App</h3>
@@ -228,7 +228,7 @@
         <div class="instruction-box">
             💡 <b>Note:</b> Pop-up aane par <b>'Download'</b> par click karein!
         </div>
-        <a href="https://bucket.appilix.com/app-apk-0a33a7244f26478d8a33efe5a49f9fbb-1790206804.apk" class="modal-btn" target="_blank" onclick="closeModalAndProceed()">DOWNLOAD APK NOW</a>
+        <a href="https://bucket.appilix.com/app-apk-0a33a7244f26478d8a33efe5a49f9fbb-1790206804.apk" class="modal-btn" target="_blank" onclick="markAsDownloaded()">DOWNLOAD APK NOW</a>
     </div>
 </div>
 
@@ -297,6 +297,13 @@
     let currentUserPhone = "";
 
     window.onload = function() {
+        // Check if user has already downloaded the app, hide banner if true
+        if (localStorage.getItem('royalSattaDownloaded') === 'true') {
+            document.getElementById('appDownloadBanner').style.display = 'none';
+        } else {
+            document.getElementById('appDownloadBanner').style.display = 'flex';
+        }
+
         try {
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                 'size': 'invisible'
@@ -325,7 +332,9 @@
         document.getElementById('downloadModal').style.display = 'flex';
     }
 
-    function closeModalAndProceed() {
+    function markAsDownloaded() {
+        // Save to localStorage so banner never shows again for this user
+        localStorage.setItem('royalSattaDownloaded', 'true');
         document.getElementById('downloadModal').style.display = 'none';
         document.getElementById('appDownloadBanner').style.display = 'none';
     }
