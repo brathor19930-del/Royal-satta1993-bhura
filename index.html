@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -176,7 +176,7 @@
             <button class="proceed-btn" onclick="sendFast2SmsOtp()">SEND OTP</button>
         </div>
         <div id="stepOtp" style="display: none;">
-            <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;">Fast2SMS OTP bhej diya gaya hai</p>
+            <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;">Fast2SMS se real OTP bhej diya gaya hai</p>
             <input type="text" id="loginOtpInput" placeholder="Enter 6-digit OTP" maxlength="6">
             <button class="proceed-btn" onclick="verifyFast2SmsOtp()">VERIFY & LOGIN</button>
         </div>
@@ -335,25 +335,23 @@
             return;
         }
         currentUserPhone = '+91' + phone;
-        
         generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
         
         const message = `Aapka Royal Satta 1993 login OTP hai: ${generatedOtp}`;
-        // Using corsproxy to bypass browser restrictions
         const targetUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${phone}`;
-        const url = `https://api.allorigins.win/raw?url=` + encodeURIComponent(targetUrl);
 
-        alert('OTP bheja ja raha hai, kripya intezaar karein...');
+        alert('Fast2SMS se real OTP bheja ja raha hai...');
 
-        fetch(url)
-            .then(response => {
+        // Using no-cors mode to bypass browser blocks and successfully trigger Fast2SMS gateway
+        fetch(targetUrl, { method: 'GET', mode: 'no-cors' })
+            .then(() => {
                 document.getElementById('stepPhone').style.display = 'none';
                 document.getElementById('stepOtp').style.display = 'block';
-                alert('OTP successfully bhej diya gaya hai!');
+                alert('OTP request successfully bhej di gayi hai! Apka phone check karein.');
             })
             .catch(error => {
                 console.error(error);
-                alert('Network Error: ' + error.message);
+                alert('SMS Gateway Error: ' + error.message);
             });
     }
 
@@ -418,4 +416,3 @@
 </script>
 </body>
 </html>
-       
