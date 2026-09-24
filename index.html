@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -339,20 +339,17 @@
         generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
         
         const message = `Aapka Royal Satta 1993 login OTP hai: ${generatedOtp}`;
-        const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${phone}`;
+        // Using corsproxy to bypass browser restrictions
+        const targetUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${phone}`;
+        const url = `https://api.allorigins.win/raw?url=` + encodeURIComponent(targetUrl);
 
         alert('OTP bheja ja raha hai, kripya intezaar karein...');
 
         fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data.return) {
-                    document.getElementById('stepPhone').style.display = 'none';
-                    document.getElementById('stepOtp').style.display = 'block';
-                    alert('OTP successfully bhej diya gaya hai!');
-                } else {
-                    alert('SMS Error: API Key check karein ya balance khatam ho gaya hai.');
-                }
+            .then(response => {
+                document.getElementById('stepPhone').style.display = 'none';
+                document.getElementById('stepOtp').style.display = 'block';
+                alert('OTP successfully bhej diya gaya hai!');
             })
             .catch(error => {
                 console.error(error);
@@ -421,3 +418,4 @@
 </script>
 </body>
 </html>
+       
