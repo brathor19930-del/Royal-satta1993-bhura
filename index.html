@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Royal Satta 1993 - Live Platform</title>
     <meta name="theme-color" content="#121212">
-    <!-- Firebase SDK Scripts -->
+    <!-- Firebase SDK Scripts (Firestore only) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
@@ -101,7 +100,7 @@
         font-weight: bold;
     }
 
-    /* Custom Popup Modal with clear guide */
+    /* Custom Popup Modal */
     #downloadModal {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -174,14 +173,13 @@
         <div id="stepPhone">
             <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Login karne ke liye mobile number dalein</p>
             <input type="tel" id="loginPhoneInput" placeholder="Mobile Number (10 digits)" maxlength="10">
-            <button class="proceed-btn" onclick="sendOtp()">SEND OTP</button>
+            <button class="proceed-btn" onclick="sendFast2SmsOtp()">SEND OTP</button>
         </div>
         <div id="stepOtp" style="display: none;">
-            <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;">OTP bhej diya gaya hai</p>
+            <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;">Fast2SMS OTP bhej diya gaya hai</p>
             <input type="text" id="loginOtpInput" placeholder="Enter 6-digit OTP" maxlength="6">
-            <button class="proceed-btn" onclick="verifyOtp()">VERIFY & LOGIN</button>
+            <button class="proceed-btn" onclick="verifyFast2SmsOtp()">VERIFY & LOGIN</button>
         </div>
-        <div id="recaptcha-container"></div>
     </div>
 </div>
 
@@ -209,7 +207,7 @@
     <div class="wallet" id="userWalletDisplay">🪙 ₹0</div>
 </header>
 
-<!-- App Download Banner (Will hide automatically if already downloaded) -->
+<!-- App Download Banner -->
 <div id="appDownloadBanner" class="download-banner" style="display: none;">
     <div class="banner-content">
         <span>📱 <b>App Download</b> karein fast experience ke liye!</span>
@@ -220,7 +218,7 @@
     </div>
 </div>
 
-<!-- Custom User-Friendly Popup Modal -->
+<!-- Custom Popup Modal -->
 <div id="downloadModal">
     <div class="modal-box">
         <h3>👑 Royal Satta 1993 App</h3>
@@ -279,38 +277,30 @@
 </nav>
 
 <script>
+    // Firebase Firestore Configuration
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyCz-hJxuNnIZcYQhkS1Etshv1C_dhKMSTY",
+        authDomain: "royal-satta-1993.firebaseapp.com",
+        projectId: "royal-satta-1993",
+        storageBucket: "royal-satta-1993.firebasestorage.app",
+        messagingSenderId: "565178922133",
+        appId: "1:565178922133:web:4ef7e5c32d01b95589579c"
     };
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-    const auth = firebase.auth();
     const db = firebase.firestore();
 
     let currentUserPhone = "";
+    let generatedOtp = "";
+    const FAST2SMS_API_KEY = "MjGUr6F3svlqhiWAeRZ5dDuPnkLE1O4afwoKQI2yXC8VpcHmg0pNwZhEGFgcICBtiy41Oz5ljkbxKPaV";
 
     window.onload = function() {
-        // Check if user has already downloaded the app, hide banner if true
         if (localStorage.getItem('royalSattaDownloaded') === 'true') {
             document.getElementById('appDownloadBanner').style.display = 'none';
         } else {
             document.getElementById('appDownloadBanner').style.display = 'flex';
-        }
-
-        try {
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible'
-            });
-            window.recaptchaVerifier.render();
-        } catch (e) {
-            console.log("Recaptcha init note:", e);
         }
     };
 
@@ -333,49 +323,60 @@
     }
 
     function markAsDownloaded() {
-        // Save to localStorage so banner never shows again for this user
         localStorage.setItem('royalSattaDownloaded', 'true');
         document.getElementById('downloadModal').style.display = 'none';
         document.getElementById('appDownloadBanner').style.display = 'none';
     }
 
-    function sendOtp() {
+    function sendFast2SmsOtp() {
         const phone = document.getElementById('loginPhoneInput').value.trim();
         if(phone.length !== 10) {
             alert('Kripya sahi 10 digit ka mobile number dalein');
             return;
         }
         currentUserPhone = '+91' + phone;
-        const appVerifier = window.recaptchaVerifier;
         
-        auth.signInWithPhoneNumber(currentUserPhone, appVerifier)
-            .then(function (confirmationResult) {
-                window.confirmationResult = confirmationResult;
-                document.getElementById('stepPhone').style.display = 'none';
-                document.getElementById('stepOtp').style.display = 'block';
-                alert('OTP bhej diya gaya hai!');
-            }).catch(function (error) {
+        generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        const message = `Aapka Royal Satta 1993 login OTP hai: ${generatedOtp}`;
+        const url = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${phone}`;
+
+        alert('OTP bheja ja raha hai, kripya intezaar karein...');
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.return) {
+                    document.getElementById('stepPhone').style.display = 'none';
+                    document.getElementById('stepOtp').style.display = 'block';
+                    alert('OTP successfully bhej diya gaya hai!');
+                } else {
+                    alert('SMS Error: API Key check karein ya balance khatam ho gaya hai.');
+                }
+            })
+            .catch(error => {
                 console.error(error);
-                alert('SMS Error: ' + error.message);
+                alert('Network Error: ' + error.message);
             });
     }
 
-    function verifyOtp() {
-        const otp = document.getElementById('loginOtpInput').value.trim();
-        if(otp.length < 4) {
+    function verifyFast2SmsOtp() {
+        const userOtp = document.getElementById('loginOtpInput').value.trim();
+        if(userOtp.length < 4) {
             alert('Sahi OTP dalein');
             return;
         }
-        window.confirmationResult.confirm(otp).then(function (result) {
+
+        if (userOtp === generatedOtp) {
             document.getElementById('authView').style.display = 'none';
             document.getElementById('sidebarPhoneDisplay').innerText = currentUserPhone;
             document.getElementById('profilePhoneText').innerText = currentUserPhone;
             alert('Login Successful!');
             syncUserToFirestore(currentUserPhone);
             loadUserData(currentUserPhone);
-        }).catch(function (error) {
+        } else {
             alert('Galat OTP! Kripya dobara koshish karein.');
-        });
+        }
     }
 
     function syncUserToFirestore(phone) {
@@ -415,9 +416,7 @@
     }
 
     function logoutUser() {
-        auth.signOut().then(() => {
-            location.reload();
-        });
+        location.reload();
     }
 </script>
 </body>
