@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Satta 1993 - Live Platform</title>
+    <meta name="theme-color" content="#121212">
+    <!-- Firebase SDK Scripts (Compat versions) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #121212; color: #e0e0e0; padding-bottom: 90px; }
+        
+        .header { background-color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
+        .menu-icon, .wallet { font-size: 22px; color: #d4af37; cursor: pointer; background: none; border: none; }
+        .logo { font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: 1.5px; }
+        .logo span { color: #d4af37; }
+
+        #authView { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-card { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; width: 100%; max-width: 360px; padding: 25px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.9); }
+        .auth-card h2 { color: #d4af37; margin-bottom: 20px; font-size: 22px; }
+        .auth-card input { width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; margin-bottom: 15px; text-align: center; }
+
+        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #1a1a1a; z-index: 3000; transition: 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.8); border-right: 1px solid #333; }
+        .sidebar.active { left: 0; }
+        .sidebar-header { background: #222; padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333; }
+        .user-avatar { font-size: 24px; background: #d4af37; color: #000; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
+        .user-info .phone { font-weight: bold; color: #d4af37; font-size: 15px; }
+        .user-info .status { font-size: 11px; color: #4caf50; }
+        .close-sidebar-btn { margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+
+        .sidebar-links { list-style: none; padding: 10px 0; }
+        .sidebar-links li { padding: 15px 20px; border-bottom: 1px solid #262626; color: #ccc; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 12px; }
+        .sidebar-links li:hover { background: #2a2a2a; color: #d4af37; }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 2500; }
+        .overlay.active { display: block; }
+
+        .marquee-container { background-color: #cc0000; color: #ffffff; padding: 12px 0; font-size: 14px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 2px solid #ff4d4d; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-box { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; width: 85%; max-width: 320px; padding: 20px; text-align: center; }
+        .modal-box h3 { color: #d4af37; margin-bottom: 12px; font-size: 18px; }
+        .modal-box p { font-size: 14px; color: #ccc; margin-bottom: 20px; line-height: 1.5; }
+        .modal-close-btn { background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%; }
+
+        .container { padding: 15px; }
+        .games-section h3 { color: #d4af37; margin-bottom: 15px; font-size: 17px; }
+        .game-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .game-title { font-weight: bold; font-size: 18px; color: #d4af37; }
+        .status-badge { font-size: 12px; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
+        .status-open { background: #1b5e20; color: #4caf50; }
+        .status-closed { background: #b71c1c; color: #ff5252; }
+
+        .game-time { font-size: 13px; color: #aaa; margin-bottom: 15px; }
+        .game-footer-row { display: flex; justify-content: space-between; align-items: center; }
+        .game-numbers { display: flex; gap: 8px; }
+        .box { background: #262626; border: 1px solid #444; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #d4af37; border-radius: 6px; }
+        .card-play-btn { background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 10px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .card-play-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { background: none; border: none; color: #888; font-size: 13px; text-align: center; cursor: pointer; font-weight: bold; }
+        .nav-item span { font-size: 18px; display: block; }
+        .nav-item.active { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN / AUTH VIEW -->
+    <div id="authView">
+        <div class="auth-card">
+            <h2>ROYAL SATTA 1993</h2>
+            <div id="stepPhone">
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Login ya Signup karne ke liye apna mobile number darj karein</p>
+                <input type="tel" id="loginPhoneInput" placeholder="Mobile Number (10 digits)" maxlength="10">
+                <button class="modal-close-btn" onclick="sendOtp()" style="width:100%;">LOGIN / SIGNUP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <button class="menu-icon" onclick="toggleSidebar()">☰</button>
+        <div class="logo">ROYAL <span>SATTA 1993</span></div>
+        <div class="wallet" id="walletDisplay">₹0</div>
+    </div>
+
+    <!-- RED SCROLLING BANNER (LIVE SYNCED FROM ADMIN) -->
+    <div class="marquee-container">
+        <marquee id="liveRedBanner">रॉयल सट्टा 1993 में आपका स्वागत है! लाइव अपडेट्स के लिए जुड़े रहें।</marquee>
+    </div>
+
+    <!-- WELCOME POPUP MODAL -->
+    <div id="offerModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3>📢 विशेष सूचना</h3>
+            <p id="adminPopupText">रॉयल सट्टा 1993 में आपका स्वागत है!</p>
+            <button class="modal-close-btn" onclick="closeModal()">ठीक है</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR DRAWER -->
+    <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div id="sidebarDrawer" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-avatar">👑</div>
+            <div class="user-info">
+                <div class="phone" id="sidebarPhoneDisplay">--</div>
+                <div class="status">● Active User</div>
+            </div>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <ul class="sidebar-links">
+            <li onclick="toggleSidebar()">🏠 Home</li>
+            <li onclick="openContactSupport()">💬 WhatsApp / Telegram Support</li>
+            <li onclick="logoutUser()" style="color: #ff4d4d;">🚪 Logout</li>
+        </ul>
+    </div>
+
+    <!-- MAIN GAMES LIST CONTAINER -->
+    <div class="container">
+        <div class="games-section">
+            <h3>🌟 LIVE BAZAR MARKETS</h3>
+            
+            <div class="game-card" id="market-card-DHAN-LAXMI">
+                <div class="game-header">
+                    <span class="game-title">DHAN LAXMI</span>
+                    <span class="status-badge status-open" id="badge-DHAN-LAXMI">RUNNING</span>
+                </div>
+                <div class="game-time" id="time-DHAN-LAXMI">Closing Time: --</div>
+                <div class="game-footer-row">
+                    <div class="game-numbers">
+                        <div class="box" id="res-DHAN-LAXMI-0">**</div>
+                        <div class="box" id="res-DHAN-LAXMI-1">**</div>
+                    </div>
+                    <button class="card-play-btn" onclick="openBidding('DHAN LAXMI')">PLAY BID</button>
+                </div>
+            </div>
+
+            <div class="game-card" id="market-card-GHAZIABAD">
+                <div class="game-header">
+                    <span class="game-title">GHAZIABAD</span>
+                    <span class="status-badge status-open" id="badge-GHAZIABAD">RUNNING</span>
+                </div>
+                <div class="game-time" id="time-GHAZIABAD">Closing Time: --</div>
+                <div class="game-footer-row">
+                    <div class="game-numbers">
+                        <div class="box" id="res-GHAZIABAD-0">**</div>
+                        <div class="box" id="res-GHAZIABAD-1">**</div>
+                    </div>
+                    <button class="card-play-btn" onclick="openBidding('GHAZIABAD')">PLAY BID</button>
+                </div>
+            </div>
+
+            <div class="game-card" id="market-card-GALI">
+                <div class="game-header">
+                    <span class="game-title">GALI</span>
+                    <span class="status-badge status-open" id="badge-GALI">RUNNING</span>
+                </div>
+                <div class="game-time" id="time-GALI">Closing Time: --</div>
+                <div class="game-footer-row">
+                    <div class="game-numbers">
+                        <div class="box" id="res-GALI-0">**</div>
+                        <div class="box" id="res-GALI-1">**</div>
+                    </div>
+                    <button class="card-play-btn" onclick="openBidding('GALI')">PLAY BID</button>
+                </div>
+            </div>
+
+            <div class="game-card" id="market-card-DESAWER">
+                <div class="game-header">
+                    <span class="game-title">DESAWER</span>
+                    <span class="status-badge status-open" id="badge-DESAWER">RUNNING</span>
+                </div>
+                <div class="game-time" id="time-DESAWER">Closing Time: --</div>
+                <div class="game-footer-row">
+                    <div class="game-numbers">
+                        <div class="box" id="res-DESAWER-0">**</div>
+                        <div class="box" id="res-DESAWER-1">**</div>
+                    </div>
+                    <button class="card-play-btn" onclick="openBidding('DESAWER')">PLAY BID</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <button class="nav-item active"><span>🏠</span>Home</button>
+        <button class="nav-item" onclick="openContactSupport()"><span>💬</span>Support</button>
+        <button class="nav-item" onclick="logoutUser()"><span>🚪</span>Logout</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCz-hJxuNnIZcYQhkS1Etshv1C_dhKMSTY",
+            authDomain: "royal-satta-1993.firebaseapp.com",
+            projectId: "royal-satta-1993",
+            storageBucket: "royal-satta-1993.firebasestorage.app",
+            messagingSenderId: "565178922133",
+            appId: "1:565178922133:web:4ef7e5c32d01b95589579c"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let currentUserMob = localStorage.getItem('royal_user_mob');
+
+        window.onload = function() {
+            if (currentUserMob) {
+                document.getElementById('authView').style.display = 'none';
+                document.getElementById('sidebarPhoneDisplay').innerText = currentUserMob;
+                startRealtimeListeners();
+            } else {
+                document.getElementById('authView').style.display = 'flex';
+            }
+        };
+
+        function sendOtp() {
+            let mob = document.getElementById('loginPhoneInput').value.trim();
+            if (mob.length !== 10) {
+                alert("Kripya sahi 10-digit mobile number daalein!");
+                return;
+            }
+            localStorage.setItem('royal_user_mob', mob);
+            currentUserMob = mob;
+            document.getElementById('authView').style.display = 'none';
+            document.getElementById('sidebarPhoneDisplay').innerText = mob;
+            alert("Login Successful!");
+            startRealtimeListeners();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('royal_user_mob');
+            location.reload();
+        }
+
+        function toggleSidebar() {
+            let drawer = document.getElementById('sidebarDrawer');
+            let overlay = document.getElementById('sidebarOverlay');
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('overlay.active');
+        }
+
+        function closeModal() {
+            document.getElementById('offerModal').style.display = 'none';
+        }
+
+        let globalContactData = { whatsapp: "8076010690", telegram: "https://telegram.org" };
+
+        function openContactSupport() {
+            window.open(`https://wa.me/91${globalContactData.whatsapp}?text=Hello%20Admin,%20mujhe%20help%20chahiye`, '_blank');
+        }
+
+        // REAL-TIME FIRESTORE SYNC LISTENERS FOR USER PANEL
+        function startRealtimeListeners() {
+            // 1. Listen to User Panel Settings (Banner & Popup)
+            db.collection("settings").doc("userPanel").onSnapshot((doc) => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (data.redBanner) {
+                        document.getElementById('liveRedBanner').innerText = data.redBanner;
+                    }
+                    if (data.popupMsg) {
+                        document.getElementById('adminPopupText').innerText = data.popupMsg;
+                        document.getElementById('offerModal').style.display = 'flex';
+                    }
+                }
+            });
+
+            // 2. Listen to WhatsApp & Telegram Contacts
+            db.collection("settings").doc("contact_config").onSnapshot((doc) => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (data.whatsapp) globalContactData.whatsapp = data.whatsapp;
+                    if (data.telegram) globalContactData.telegram = data.telegram;
+                }
+            });
+
+            // 3. Listen to Market Results
+            db.collection("market_results").onSnapshot((snapshot) => {
+                snapshot.forEach((doc) => {
+                    let mkt = doc.id;
+                    let data = doc.data();
+                    let resVal = data.result || "**";
+                    
+                    let box0 = document.getElementById(`res-${mkt}-0`);
+                    let box1 = document.getElementById(`res-${mkt}-1`);
+                    if (box0 && box1 && resVal.length === 2) {
+                        box0.innerText = resVal[0];
+                        box1.innerText = resVal[1];
+                    }
+                });
+            });
+
+            // 4. Listen to Market Timings & Statuses
+            db.collection("market_timings").onSnapshot((snapshot) => {
+                snapshot.forEach((doc) => {
+                    let mkt = doc.id;
+                    let data = doc.data();
+                    let badge = document.getElementById(`badge-${mkt}`);
+                    let timeLbl = document.getElementById(`time-${mkt}`);
+
+                    if (data.closeTime && timeLbl) {
+                        timeLbl.innerText = `Closing Time: ${data.closeTime}`;
+                    }
+                    if (data.status && badge) {
+                        badge.innerText = data.status === 'OPEN' ? 'RUNNING' : 'LOCKED';
+                        badge.className = data.status === 'OPEN' ? 'status-badge status-open' : 'status-badge status-closed';
+                    }
+                });
+            });
+        }
+
+        function openBidding(marketName) {
+            alert(`Opening bidding window for ${marketName}`);
+        }
+    </script>
+</body>
+</html>
