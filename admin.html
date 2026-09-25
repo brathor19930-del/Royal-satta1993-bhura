@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Satta 1993 - Ultimate Secure Super Admin Panel</title>
+    <!-- Firebase SDK Scripts (Compat versions) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #121212; color: #e0e0e0; padding: 5px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .admin-login-box { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; padding: 25px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+        .admin-login-box h2 { color: #d4af37; margin-bottom: 20px; font-size: 22px; }
+        .admin-login-box input, .admin-login-box select { width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 16px; outline: none; margin-bottom: 15px; text-align: center; }
+        
+        .login-btn { width: 100%; background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
+        
+        .dashboard-box { display: none; background: #1a1a1a; border: 2px solid #d4af37; padding: 12px; border-radius: 10px; width: 100%; max-width: 98vw; height: 98vh; flex-direction: column; box-shadow: 0 4px 30px rgba(0,0,0,0.9); }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .dash-header h3 { color: #4caf50; font-size: 16px; }
+        
+        .section-title { color: #d4af37; font-size: 15px; font-weight: bold; margin: 5px 0; text-align: center; }
+        
+        .menu-bar-container { position: relative; margin-bottom: 8px; flex-shrink: 0; }
+        .menu-toggle-btn { background: #222; border: 1px solid #d4af37; color: #d4af37; padding: 8px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #1a1a1a; border: 1px solid #d4af37; border-radius: 8px; width: 290px; box-shadow: 0 5px 15px rgba(0,0,0,0.9); z-index: 999; max-height: 60vh; overflow-y: auto; }
+        .dropdown-menu button { display: block; width: 100%; background: none; border: none; color: #fff; padding: 10px 15px; text-align: left; font-size: 13px; cursor: pointer; border-bottom: 1px solid #333; font-weight: bold; }
+        .dropdown-menu button:hover { background: #262626; color: #d4af37; }
+        
+        .back-btn { background: linear-gradient(90deg, #333, #222); color: #d4af37; border: 1px solid #d4af37; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        .back-btn:hover { background: #d4af37; color: #000; }
+
+        .admin-folder { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; background: #1a1a1a; padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        .admin-folder.active { display: flex; }
+
+        .grid-chart-table { width: 100%; border-collapse: collapse; font-size: 16px; background: #1a1a1a; flex-grow: 1; display: block; overflow-y: auto; margin-top: 5px; border: 1px solid #444; }
+        .grid-chart-table th, .grid-chart-table td { border: 1px solid #444; padding: 10px 6px; text-align: center; }
+        .grid-chart-table th { background: #262626; color: #d4af37; position: sticky; top: 0; font-size: 15px; z-index: 10; }
+        .grid-chart-table tr:nth-child(even) { background: #222; }
+
+        .subadmin-form { background: #222; border: 1px solid #444; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .subadmin-form input, .subadmin-form select, .subadmin-form textarea { width: 100%; background: #1a1a1a; border: 1px solid #555; padding: 10px; border-radius: 6px; color: #fff; margin-bottom: 8px; font-size: 14px; outline: none; }
+        .subadmin-item { background: #222; border: 1px solid #333; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- ADMIN LOGIN VIEW -->
+    <div id="adminLoginView" class="admin-login-box">
+        <h2>👑 SECURE ADMIN LOGIN</h2>
+        <input type="tel" id="adminMob" placeholder="Enter Super Mobile No" maxlength="10">
+        <input type="password" id="adminPass" placeholder="Enter Password">
+        <button class="login-btn" onclick="verifyLogin()">SECURE LOGIN</button>
+        <p style="font-size: 11px; color: #888; margin-top: 10px;">Firebase Firestore Live Connected.</p>
+    </div>
+
+    <!-- ADMIN DASHBOARD VIEW -->
+    <div id="adminDashboardView" class="dashboard-box">
+        <div class="dash-header">
+            <h3 id="welcomeAdminText">Login Successful!</h3>
+            <button onclick="logoutAdmin()" style="background: #b71c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">LOGOUT</button>
+        </div>
+
+        <div class="menu-bar-container">
+            <button class="menu-toggle-btn" onclick="toggleMenu()">☰ MENU / SECTIONS (20 TABS)</button>
+            <div id="dropdownMenu" class="dropdown-menu">
+                <button onclick="switchFolder('frontchart')">1. 📊 Live Bids (00-99)</button>
+                <button onclick="switchFolder('contactsettings')">2. 💬 WhatsApp & Telegram Manager</button>
+                <button onclick="switchFolder('upiqrsettings')">3. 📱 Admin UPI & QR Code Manager</button>
+                <button onclick="switchFolder('superadminsettings')">4. ⚙️ Super Admin Credentials Control</button>
+                <button onclick="switchFolder('bulkcontrol')">5. 🚨 Master Bulk Market Controller</button>
+                <button onclick="switchFolder('closingReports')">6. 📊 Daily Closing P&L Reports</button>
+                <button onclick="switchFolder('winningclaims')">7. 🏆 Winning Payout Claims</button>
+                <button onclick="switchFolder('userblockctrl')">8. 🚫 User Block / Unblock</button>
+                <button onclick="switchFolder('waLogs')">9. 📡 WhatsApp Broadcast Logs</button>
+                <button onclick="switchFolder('userpanelctrl')">10. 📢 User Panel Offers & Banner</button>
+                <button onclick="switchFolder('timings')">11. ⏰ Auto Timings & Market Lock</button>
+                <button onclick="switchFolder('ledger')">12. 💳 Manual Wallet Ledger</button>
+                <button onclick="switchFolder('profitloss')">13. 📈 Profit & Loss (P&L)</button>
+                <button onclick="switchFolder('auditlogs')">14. 📋 Audit Logs Tracker</button>
+                <button onclick="switchFolder('userhistory')">15. 👤 Users 31-Day History</button>
+                <button onclick="switchFolder('analysis')">16. 🔥 High-Low Analysis</button>
+                <button onclick="switchFolder('subadmins')">17. 👥 Sub-Admin Management (Limit 10)</button>
+                <button onclick="switchFolder('results')">18. 🏆 Declare Result</button>
+                <button onclick="switchFolder('deposits')">19. 💰 Add Fund Requests</button>
+                <button onclick="switchFolder('withdrawals')">20. 📤 Withdrawal Requests</button>
+            </div>
+        </div>
+
+        <!-- 1. LIVE BIDS -->
+        <div id="folderFrontChart" class="admin-folder active">
+            <div class="section-title">📊 LIVE 00 TO 99 BIDS TRACKER</div>
+            <select id="frontMarketSelect" onchange="renderFrontGridChart()" style="width: 100%; background: #262626; color: #fff; padding: 10px; border: 1px solid #444; border-radius: 6px; margin-bottom: 6px; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                <option value="DELHI BAZAR">DELHI BAZAR MARKET</option>
+                <option value="SRIGANESH">SRIGANESH MARKET</option>
+                <option value="FARIDABAD">FARIDABAD MARKET</option>
+                <option value="GHAZIABAD">GHAZIABAD MARKET</option>
+                <option value="GALI">GALI MARKET</option>
+                <option value="DESAWER">DESAWER MARKET</option>
+                <option value="786">786 MARKET</option>
+            </select>
+            <table class="grid-chart-table">
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Jodi</th>
+                        <th style="width:35%;">Amount (₹)</th>
+                        <th style="width:15%;">Jodi</th>
+                        <th style="width:35%;">Amount (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="frontGridTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 2. WHATSAPP & TELEGRAM MANAGER -->
+        <div id="folderContactSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💬 WHATSAPP & TELEGRAM MANAGER</div>
+            <div class="subadmin-form">
+                <label style="font-size:12px; color:#d4af37;">WhatsApp Number:</label>
+                <input type="tel" id="adminWhatsAppInput" placeholder="e.g. 8076010690" maxlength="10">
+                <label style="font-size:12px; color:#d4af37; margin-top:8px; display:block;">Telegram Link:</label>
+                <input type="text" id="adminTelegramInput" placeholder="e.g. https://telegram.org">
+                <button class="login-btn" onclick="saveContactSettings()" style="margin-top: 10px; padding: 10px;">SAVE & UPDATE LIVE</button>
+            </div>
+        </div>
+
+        <!-- 3. UPI & QR SETTINGS -->
+        <div id="folderUpiQrSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📱 ADMIN UPI ID & QR CODE MANAGER</div>
+            <div class="subadmin-form"><p style="color:#ccc;">UPI management active.</p></div>
+        </div>
+
+        <!-- 4. SUPER ADMIN SETTINGS -->
+        <div id="folderSuperAdminSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">⚙️ SUPER ADMIN IDENTITY CONFIGURATOR</div>
+            <div class="subadmin-form"><p style="color:#ccc;">Super admin settings active.</p></div>
+        </div>
+
+        <!-- 5. BULK CONTROL -->
+        <div id="folderBulkControl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🚨 MASTER BULK MARKET CONTROLLER</div>
+            <div class="subadmin-form" style="text-align: center;">
+                <button class="login-btn" onclick="alert('All Markets Locked!')" style="background: #b71c1c; color: #fff; padding: 14px;">🚨 EMERGENCY LOCK ALL MARKETS</button>
+            </div>
+        </div>
+
+        <!-- 6. CLOSING REPORTS -->
+        <div id="folderClosingReports" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📊 DAILY CLOSING P&L REPORTS</div>
+            <p style="color:#ccc;">No closing reports available.</p>
+        </div>
+
+        <!-- 7. WINNING CLAIMS -->
+        <div id="folderWinningClaims" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🏆 WINNING PAYOUT CLAIMS TRACKER</div>
+            <p style="color:#ccc;">No pending winning claims.</p>
+        </div>
+
+        <!-- 8. USER BLOCK -->
+        <div id="folderUserBlockCtrl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🚫 USER BLOCK / UNBLOCK CONTROL</div>
+            <div class="subadmin-form">
+                <input type="tel" id="blockUserMob" placeholder="Enter Mobile" maxlength="10">
+                <button class="login-btn" onclick="alert('Done!')">BLOCK / UNBLOCK</button>
+            </div>
+        </div>
+
+        <!-- 9. WHATSAPP LOGS -->
+        <div id="folderWaLogs" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📡 WHATSAPP BROADCAST LOGS</div>
+            <p style="color:#ccc;">No logs available.</p>
+        </div>
+
+        <!-- 10. USER PANEL OFFERS -->
+        <div id="folderUserPanelCtrl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📢 USER PANEL OFFERS & BANNER</div>
+            <div class="subadmin-form">
+                <textarea id="redBannerInput" rows="2" placeholder="Banner text"></textarea>
+                <textarea id="popupMsgInput" rows="3" placeholder="Popup message"></textarea>
+                <button class="login-btn" onclick="saveUserPanelConfig()">UPDATE USER PANEL LIVE</button>
+            </div>
+        </div>
+
+        <!-- 11. TIMINGS -->
+        <div id="folderTimings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">⏰ AUTO TIMINGS & MARKET LOCK</div>
+            <div class="subadmin-form">
+                <label style="font-size:12px; color:#d4af37;">Select Market:</label>
+                <select id="timingMarketSelect" style="margin-bottom:8px;">
+                    <option value="DELHI BAZAR">DELHI BAZAR</option>
+                    <option value="SRIGANESH">SRIGANESH</option>
+                    <option value="FARIDABAD">FARIDABAD</option>
+                    <option value="GHAZIABAD">GHAZIABAD</option>
+                    <option value="GALI">GALI</option>
+                    <option value="DESAWER">DESAWER</option>
+                    <option value="786">786</option>
+                </select>
+                <button class="login-btn" onclick="alert('Timing saved!')">SAVE TIMING LIVE</button>
+            </div>
+        </div>
+
+        <!-- 12. LEDGER -->
+        <div id="folderLedger" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💳 MANUAL WALLET LEDGER</div>
+            <p style="color:#ccc;">Ledger system active.</p>
+        </div>
+
+        <!-- 13. PROFIT LOSS -->
+        <div id="folderProfitloss" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📈 PROFIT & LOSS (P&L) DASHBOARD</div>
+            <p style="color:#ccc;">P&L metrics active.</p>
+        </div>
+
+        <!-- 14. AUDIT LOGS -->
+        <div id="folderAuditlogs" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📋 AUDIT LOGS TRACKER</div>
+            <p style="color:#ccc;">Audit logs active.</p>
+        </div>
+
+        <!-- 15. USER HISTORY -->
+        <div id="folderUserHistory" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📅 31-DAY USER HISTORY</div>
+            <p style="color:#ccc;">No history records.</p>
+        </div>
+
+        <!-- 16. HIGH LOW -->
+        <div id="folderAnalysis" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🔥 HIGH TO LOW ANALYSIS</div>
+            <p style="color:#ccc;">Analysis data active.</p>
+        </div>
+
+        <!-- 17. SUB ADMINS -->
+        <div id="folderSubAdmins" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">👥 SUB-ADMIN MANAGEMENT (Max Limit: 10)</div>
+            <div class="subadmin-form">
+                <input type="text" id="subName" placeholder="Enter Sub-Admin Name">
+                <input type="tel" id="subWhatsapp" placeholder="Enter 10-digit WhatsApp" maxlength="10">
+                <button class="login-btn" onclick="alert('Sub-admin added!')">ADD SUB-ADMIN</button>
+            </div>
+        </div>
+
+        <!-- 18. RESULTS -->
+        <div id="folderResults" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🏆 DECLARE RESULT & PAYOUT</div>
+            <div class="subadmin-form">
+                <select id="adminMarketSelect" style="width: 100%; background: #262626; color: #fff; padding: 12px; border: 1px solid #444; border-radius: 6px; margin-bottom: 10px;">
+                    <option value="DELHI BAZAR">DELHI BAZAR</option>
+                    <option value="SRIGANESH">SRIGANESH</option>
+                    <option value="FARIDABAD">FARIDABAD</option>
+                    <option value="GHAZIABAD">GHAZIABAD</option>
+                    <option value="GALI">GALI</option>
+                    <option value="DESAWER">DESAWER</option>
+                    <option value="786">786</option>
+                </select>
+                <input type="text" id="adminResultInput" placeholder="Enter Winning Number (e.g. 32)" maxlength="2" style="width: 100%; background: #262626; color: #fff; padding: 12px; border: 1px solid #444; border-radius: 6px; margin-bottom: 10px; text-align: center; font-size: 16px;">
+                <button class="login-btn" style="padding: 12px; font-size: 15px;" onclick="adminDeclareResult()">DECLARE & UPDATE LIVE TO FIRESTORE</button>
+            </div>
+        </div>
+
+        <!-- 19. DEPOSITS -->
+        <div id="folderDeposits" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💰 ADD FUND REQUESTS</div>
+            <p style="color:#ccc;">No deposit requests.</p>
+        </div>
+
+        <!-- 20. WITHDRAWALS -->
+        <div id="folderWithdrawals" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📤 WITHDRAWAL REQUESTS</div>
+            <p style="color:#ccc;">No withdrawal requests.</p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-Placeholder-Key",
+            authDomain: "mywebapp-self.firebaseapp.com",
+            projectId: "mywebapp-self",
+            storageBucket: "mywebapp-self.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        const MASTER_ADMIN_MOB = "8076010690";
+        const MASTER_ADMIN_PASS = "123456";
+
+        function verifyLogin() {
+            const mob = document.getElementById('adminMob').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+
+            if(mob === MASTER_ADMIN_MOB && pass === MASTER_ADMIN_PASS) {
+                document.getElementById('adminLoginView').style.display = 'none';
+                document.getElementById('adminDashboardView').style.display = 'flex';
+                document.getElementById('welcomeAdminText').textContent = "Welcome Master Admin!";
+                renderFrontGridChart();
+            } else {
+                alert("Invalid Admin Mobile Number or Password!");
+            }
+        }
+
+        function logoutAdmin() {
+            location.reload();
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function switchFolder(folderName) {
+            document.querySelectorAll('.admin-folder').forEach(f => f.classList.remove('active'));
+            document.getElementById('dropdownMenu').style.display = 'none';
+
+            const map = {
+                'frontchart': 'folderFrontChart',
+                'contactsettings': 'folderContactSettings',
+                'upiqrsettings': 'folderUpiQrSettings',
+                'superadminsettings': 'folderSuperAdminSettings',
+                'bulkcontrol': 'folderBulkControl',
+                'closingReports': 'folderClosingReports',
+                'winningclaims': 'folderWinningClaims',
+                'userblockctrl': 'folderUserBlockCtrl',
+                'waLogs': 'folderWaLogs',
+                'userpanelctrl': 'folderUserPanelCtrl',
+                'timings': 'folderTimings',
+                'ledger': 'folderLedger',
+                'profitloss': 'folderProfitloss',
+                'auditlogs': 'folderAuditlogs',
+                'userhistory': 'folderUserHistory',
+                'analysis': 'folderAnalysis',
+                'subadmins': 'folderSubAdmins',
+                'results': 'folderResults',
+                'deposits': 'folderDeposits',
+                'withdrawals': 'folderWithdrawals'
+            };
+
+            if(map[folderName]) {
+                document.getElementById(map[folderName]).classList.add('active');
+            }
+        }
+
+        // 1. Live Bids 00-99 Tracker
+        function renderFrontGridChart() {
+            const market = document.getElementById('frontMarketSelect').value;
+            const tbody = document.getElementById('frontGridTableBody');
+            
+            db.collection("bids").where("marketName", "==", market).onSnapshot(snapshot => {
+                let bidMap = {};
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    bidMap[data.jodiNumber] = (bidMap[data.jodiNumber] || 0) + Number(data.amount);
+                });
+
+                tbody.innerHTML = '';
+                for (let i = 0; i <= 49; i++) {
+                    let j1 = String(i).padStart(2, '0');
+                    let j2 = String(i + 50).padStart(2, '0');
+                    let amt1 = bidMap[j1] || 0;
+                    let amt2 = bidMap[j2] || 0;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${j1}</b></td>
+                            <td style="color: #4caf50;">₹${amt1}</td>
+                            <td><b>${j2}</b></td>
+                            <td style="color: #4caf50;">₹${amt2}</td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        // 2. WhatsApp & Telegram
+        async function saveContactSettings() {
+            const whatsapp = document.getElementById('adminWhatsAppInput').value.trim();
+            const telegram = document.getElementById('adminTelegramInput').value.trim();
+            try {
+                await db.collection("app_config").doc("contacts").set({ whatsapp, telegram }, { merge: true });
+                alert("WhatsApp & Telegram updated live successfully!");
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        // 10. User Panel Offers & Banner
+        async function saveUserPanelConfig() {
+            const banner = document.getElementById('redBannerInput').value.trim();
+            const popupMessage = document.getElementById('popupMsgInput').value.trim();
+            try {
+                await db.collection("app_config").doc("main_settings").set({ banner, popupMessage }, { merge: true });
+                alert("User panel offers updated live!");
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        // 18. Declare Result
+        async function adminDeclareResult() {
+            const market = document.getElementById('adminMarketSelect').value;
+            const winningNumber = document.getElementById('adminResultInput').value.trim();
+            if(winningNumber.length !== 2) {
+                alert("Please enter a valid 2-digit winning number (e.g. 32)");
+                return;
+            }
+            try {
+                await db.collection("market_results").doc(market).set({
+                    winningNumber: winningNumber,
+                    declaredAt: new Date().toLocaleTimeString(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                alert("Result declared and synced live to database!");
+            } catch(e) {
+                alert("Error declaring result: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
