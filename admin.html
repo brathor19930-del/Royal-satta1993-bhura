@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Satta 1993 - Ultimate Secure Super Admin Panel</title>
+    <!-- Firebase SDK Scripts (Compat versions) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #121212; color: #e0e0e0; padding: 5px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .admin-login-box { background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; padding: 25px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+        .admin-login-box h2 { color: #d4af37; margin-bottom: 20px; font-size: 22px; }
+        .admin-login-box input, .admin-login-box select { width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 16px; outline: none; margin-bottom: 15px; text-align: center; }
+        
+        .login-btn { width: 100%; background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
+        
+        .dashboard-box { display: none; background: #1a1a1a; border: 2px solid #d4af37; padding: 12px; border-radius: 10px; width: 100%; max-width: 98vw; height: 98vh; flex-direction: column; box-shadow: 0 4px 30px rgba(0,0,0,0.9); }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .dash-header h3 { color: #4caf50; font-size: 16px; }
+        
+        .section-title { color: #d4af37; font-size: 15px; font-weight: bold; margin: 5px 0; text-align: center; }
+        
+        .menu-bar-container { position: relative; margin-bottom: 8px; flex-shrink: 0; }
+        .menu-toggle-btn { background: #222; border: 1px solid #d4af37; color: #d4af37; padding: 8px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #1a1a1a; border: 1px solid #d4af37; border-radius: 8px; width: 290px; box-shadow: 0 5px 15px rgba(0,0,0,0.9); z-index: 999; max-height: 60vh; overflow-y: auto; }
+        .dropdown-menu button { display: block; width: 100%; background: none; border: none; color: #fff; padding: 10px 15px; text-align: left; font-size: 13px; cursor: pointer; border-bottom: 1px solid #333; font-weight: bold; }
+        .dropdown-menu button:hover { background: #262626; color: #d4af37; }
+        
+        .back-btn { background: linear-gradient(90deg, #333, #222); color: #d4af37; border: 1px solid #d4af37; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        .back-btn:hover { background: #d4af37; color: #000; }
+
+        .admin-folder { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; background: #1a1a1a; padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        .admin-folder.active { display: flex; }
+
+        .grid-chart-table { width: 100%; border-collapse: collapse; font-size: 16px; background: #1a1a1a; flex-grow: 1; display: block; overflow-y: auto; margin-top: 5px; border: 1px solid #444; }
+        .grid-chart-table th, .grid-chart-table td { border: 1px solid #444; padding: 10px 6px; text-align: center; }
+        .grid-chart-table th { background: #262626; color: #d4af37; position: sticky; top: 0; font-size: 15px; z-index: 10; }
+        .grid-chart-table tr:nth-child(even) { background: #222; }
+
+        .subadmin-form { background: #222; border: 1px solid #444; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .subadmin-form input, .subadmin-form select, .subadmin-form textarea { width: 100%; background: #1a1a1a; border: 1px solid #555; padding: 10px; border-radius: 6px; color: #fff; margin-bottom: 8px; font-size: 14px; outline: none; }
+        .subadmin-item { background: #222; border: 1px solid #333; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .request-card { background: #222; border: 1px solid #d4af37; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; }
+
+        /* Accordion Toggle Header for History */
+        .accordion-header {
+            background: #222; border: 1px solid #d4af37; color: #d4af37; padding: 12px 15px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; margin-top: 12px; font-size: 14px;
+        }
+        .accordion-header:hover { background: #2a2a2a; }
+        .accordion-content { display: none; margin-top: 8px; }
+        .accordion-content.open { display: block; }
+
+        /* Fullscreen Image Modal Styles */
+        #imgModalOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; justify-content: center;
+            align-items: center; z-index: 20000; padding: 15px; text-align: center;
+        }
+        #imgModalContent {
+            max-width: 100%; max-height: 90vh; object-fit: contain;
+            border: 2px solid #d4af37; border-radius: 8px; background: #fff;
+        }
+        .img-modal-close {
+            position: absolute; top: 15px; right: 20px; background: #b71c1c; color: #fff;
+            border: none; font-size: 22px; font-weight: bold; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="adminLoginView" class="admin-login-box">
+        <h2>👑 SECURE ADMIN LOGIN</h2>
+        <input type="tel" id="adminMob" placeholder="Enter Super Mobile No" maxlength="10">
+        <input type="password" id="adminPass" placeholder="Enter Password">
+        <button class="login-btn" onclick="verifyLogin()">SECURE LOGIN</button>
+        <p style="font-size: 11px; color: #888; margin-top: 10px;">Firebase Firestore Live Connected.</p>
+    </div>
+
+    <!-- Fullscreen Image Viewer Modal -->
+    <div id="imgModalOverlay" onclick="closeFullscreenImage()">
+        <button class="img-modal-close" onclick="closeFullscreenImage()">✕</button>
+        <img id="imgModalContent" src="" alt="Fullscreen Proof">
+    </div>
+
+    <div id="adminDashboardView" class="dashboard-box">
+        <div class="dash-header">
+            <h3 id="welcomeAdminText">Login Successful!</h3>
+            <button onclick="logoutAdmin()" style="background: #b71c1c; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">LOGOUT</button>
+        </div>
+
+        <div class="menu-bar-container">
+            <button class="menu-toggle-btn" onclick="toggleMenu()">☰ MENU / SECTIONS</button>
+            <div id="dropdownMenu" class="dropdown-menu">
+                <button onclick="switchFolder('frontchart')">📊 Live Bids (00-99)</button>
+                <button onclick="switchFolder('contactsettings')">💬 WhatsApp & Telegram Manager</button>
+                <button onclick="switchFolder('upiqrsettings')">📱 Admin UPI & QR Code Manager</button>
+                <button onclick="switchFolder('superadminsettings')">⚙️ Super Admin Credentials Control</button>
+                <button onclick="switchFolder('bulkcontrol')">🚨 Master Bulk Market Controller</button>
+                <button onclick="switchFolder('closingReports')">📊 Daily Closing P&L Reports</button>
+                <button onclick="switchFolder('winningclaims')">🏆 Winning Payout Claims</button>
+                <button onclick="switchFolder('userblockctrl')">🚫 User Block / Unblock</button>
+                <button onclick="switchFolder('waLogs')">📡 WhatsApp Broadcast Logs</button>
+                <button onclick="switchFolder('userpanelctrl')">📢 User Panel Offers & Banner</button>
+                <button onclick="switchFolder('timings')">⏰ Auto Timings & Market Lock</button>
+                <button onclick="switchFolder('ledger')">💳 Manual Wallet Ledger</button>
+                <button onclick="switchFolder('profitloss')">📈 Profit & Loss (P&L)</button>
+                <button onclick="switchFolder('auditlogs')">📋 Audit Logs Tracker</button>
+                <button onclick="switchFolder('userhistory')">👤 Users 31-Day History</button>
+                <button onclick="switchFolder('analysis')">🔥 High-Low Analysis</button>
+                <button onclick="switchFolder('subadmins')">👥 Sub-Admin Management (Limit 10)</button>
+                <button onclick="switchFolder('results')">🏆 Declare Result</button>
+                <button onclick="switchFolder('deposits')">💰 Add Fund Requests</button>
+                <button onclick="switchFolder('withdrawals')">📤 Withdrawal Requests</button>
+            </div>
+        </div>
+
+        <!-- 1. LIVE BIDS -->
+        <div id="folderFrontChart" class="admin-folder active">
+            <div class="section-title">📊 LIVE 00 TO 99 BIDS TRACKER</div>
+            <select id="frontMarketSelect" onchange="renderFrontGridChart()" style="width: 100%; background: #262626; color: #fff; padding: 10px; border: 1px solid #444; border-radius: 6px; margin-bottom: 6px; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                <option value="DHAN LAXMI">DHAN LAXMI MARKET</option>
+                <option value="786">786 MARKET</option>
+                <option value="DELHI BAZAR">DELHI BAZAR MARKET</option>
+                <option value="SRIGANESH">SRIGANESH MARKET</option>
+                <option value="FARIDABAD">FARIDABAD MARKET</option>
+                <option value="GHAZIABAD">GHAZIABAD MARKET</option>
+                <option value="GALI">GALI MARKET</option>
+                <option value="DESAWER">DESAWER MARKET</option>
+            </select>
+            <table class="grid-chart-table">
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Jodi</th>
+                        <th style="width:35%;">Amount (₹)</th>
+                        <th style="width:15%;">Jodi</th>
+                        <th style="width:35%;">Amount (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="frontGridTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 2. WHATSAPP & TELEGRAM MANAGER -->
+        <div id="folderContactSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💬 WHATSAPP & TELEGRAM MANAGER</div>
+            <div class="subadmin-form">
+                <label style="font-size:12px; color:#d4af37;">WhatsApp Number:</label>
+                <input type="tel" id="adminWhatsAppInput" placeholder="e.g. 8076010690" maxlength="10">
+                <label style="font-size:12px; color:#d4af37; margin-top:8px; display:block;">Telegram Link:</label>
+                <input type="text" id="adminTelegramInput" placeholder="e.g. https://telegram.org">
+                <button class="login-btn" onclick="saveContactSettings()" style="margin-top: 10px; padding: 10px;">SAVE & UPDATE LIVE</button>
+            </div>
+        </div>
+
+        <!-- 3. UPI & QR SETTINGS -->
+        <div id="folderUpiQrSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📱 ADMIN UPI ID & QR CODE MANAGER</div>
+            <div class="subadmin-form">
+                <label style="font-size:12px; color:#d4af37;">UPI ID (e.g. admin@upi):</label>
+                <input type="text" id="adminUpiIdInput" placeholder="Enter UPI ID">
+                
+                <label style="font-size:12px; color:#d4af37; margin-top:8px; display:block;">Upload New QR Code Image:</label>
+                <input type="file" id="adminQrImageInput" accept="image/*" style="font-size: 12px; padding: 6px; margin-bottom: 10px;">
+                
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <p style="font-size: 11px; color: #aaa; margin-bottom: 5px;">Current QR Preview:</p>
+                    <img id="adminCurrentQrPreview" src="" alt="No QR Uploaded" style="width: 120px; height: 120px; border-radius: 6px; border: 1px solid #444; background: #fff; object-fit: contain;">
+                </div>
+
+                <button class="login-btn" onclick="saveUpiQrSettings()" style="margin-top: 10px; padding: 10px;">SAVE UPI & QR LIVE</button>
+            </div>
+        </div>
+
+        <!-- 4. SUPER ADMIN SETTINGS -->
+        <div id="folderSuperAdminSettings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">⚙️ SUPER ADMIN IDENTITY CONFIGURATOR</div>
+            <div class="subadmin-form"><p style="color:#ccc;">Super admin settings active.</p></div>
+        </div>
+
+        <!-- 5. BULK CONTROL -->
+        <div id="folderBulkControl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🚨 MASTER BULK MARKET CONTROLLER</div>
+            <div class="subadmin-form" style="text-align: center;">
+                <button class="login-btn" onclick="alert('All Markets Locked!')" style="background: #b71c1c; color: #fff; padding: 14px;">🚨 EMERGENCY LOCK ALL MARKETS</button>
+            </div>
+        </div>
+
+        <!-- 6. CLOSING REPORTS -->
+        <div id="folderClosingReports" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📊 DAILY CLOSING P&L REPORTS</div>
+            <p style="color:#ccc;">No closing reports available.</p>
+        </div>
+
+        <!-- 7. WINNING CLAIMS -->
+        <div id="folderWinningClaims" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🏆 WINNING PAYOUT CLAIMS TRACKER</div>
+            <p style="color:#ccc;">No pending winning claims.</p>
+        </div>
+
+        <!-- 8. USER BLOCK -->
+        <div id="folderUserBlockCtrl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🚫 USER BLOCK / UNBLOCK CONTROL</div>
+            <div class="subadmin-form">
+                <input type="tel" id="blockUserMob" placeholder="Enter Mobile" maxlength="10">
+                <button class="login-btn" onclick="alert('Done!')">BLOCK / UNBLOCK</button>
+            </div>
+        </div>
+
+        <!-- 9. WHATSAPP LOGS -->
+        <div id="folderWaLogs" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📡 WHATSAPP BROADCAST LOGS</div>
+            <p style="color:#ccc;">No logs available.</p>
+        </div>
+
+        <!-- 10. USER PANEL OFFERS -->
+        <div id="folderUserPanelCtrl" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📢 USER PANEL OFFERS & BANNER</div>
+            <div class="subadmin-form">
+                <textarea id="redBannerInput" rows="2" placeholder="Banner text"></textarea>
+                <textarea id="popupMsgInput" rows="3" placeholder="Popup message"></textarea>
+                <button class="login-btn" onclick="saveUserPanelConfig()">UPDATE USER PANEL LIVE</button>
+            </div>
+        </div>
+
+        <!-- 11. TIMINGS -->
+        <div id="folderTimings" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">⏰ AUTO TIMINGS & MARKET LOCK</div>
+            <div class="subadmin-form">
+                <label style="font-size:12px; color:#d4af37;">Select Market:</label>
+                <select id="timingMarketSelect" onchange="loadMarketTiming()" style="margin-bottom:8px;">
+                    <option value="DHAN LAXMI">DHAN LAXMI</option>
+                    <option value="786">786</option>
+                    <option value="DELHI BAZAR">DELHI BAZAR</option>
+                    <option value="SRIGANESH">SRIGANESH</option>
+                    <option value="FARIDABAD">FARIDABAD</option>
+                    <option value="GHAZIABAD">GHAZIABAD</option>
+                    <option value="GALI">GALI</option>
+                    <option value="DESAWER">DESAWER</option>
+                </select>
+
+                <label style="font-size:12px; color:#d4af37;">Change Closing Time:</label>
+                <input type="time" id="marketCloseTimeInput" style="margin-bottom:8px;">
+
+                <label style="font-size:12px; color:#d4af37;">Market Status:</label>
+                <select id="marketStatusInput" style="margin-bottom:8px;">
+                    <option value="OPEN">RUNNING (Open)</option>
+                    <option value="LOCKED">LOCKED (Closed)</option>
+                </select>
+
+                <button class="login-btn" onclick="saveMarketTiming()" style="margin-top: 10px; padding: 10px;">SAVE TIMING & STATUS LIVE</button>
+            </div>
+        </div>
+
+        <!-- 12. LEDGER -->
+        <div id="folderLedger" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💳 MANUAL WALLET LEDGER</div>
+            <div class="subadmin-form">
+                <input type="tel" id="ledgerUserMob" placeholder="Enter 10-digit Mobile" maxlength="10">
+                <select id="ledgerActionType">
+                    <option value="CREDIT">Credit (Add Fund)</option>
+                    <option value="DEBIT">Debit (Deduct Fund)</option>
+                </select>
+                <input type="number" id="ledgerAmountInput" placeholder="Enter Amount">
+                <input type="text" id="ledgerReasonInput" placeholder="Reason (e.g. Bonus / Manual)">
+                <button class="login-btn" onclick="submitManualLedger()">SUBMIT WALLET UPDATE</button>
+            </div>
+        </div>
+
+        <!-- 13. PROFIT LOSS -->
+        <div id="folderProfitloss" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📈 PROFIT & LOSS (P&L) DASHBOARD</div>
+            <p style="color:#ccc;">P&L metrics active.</p>
+        </div>
+
+        <!-- 14. AUDIT LOGS -->
+        <div id="folderAuditlogs" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📋 AUDIT LOGS TRACKER</div>
+            <div style="background:#222; padding:10px; border-radius:6px; font-size:12px;" id="auditLogsContainer"></div>
+        </div>
+
+        <!-- 15. USER HISTORY -->
+        <div id="folderUserHistory" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">👤 MASTER USERS HISTORY & BIDS TRACKER</div>
+            <div id="adminMasterUserHistoryContainer">
+                <p style="color:#aaa; text-align:center;">Loading users history...</p>
+            </div>
+        </div>
+
+        <!-- 15.1 DETAILED USER PROFILE & COLLAPSIBLE HISTORY -->
+        <div id="folderSingleUserDetail" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('userhistory')">⬅ BACK TO USERS LIST</button>
+            <div class="section-title" id="singleUserTitle">USER DETAILS & LEDGER</div>
+            <div id="singleUserDetailContainer"></div>
+        </div>
+
+        <!-- 16. HIGH LOW -->
+        <div id="folderAnalysis" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🔥 HIGH TO LOW ANALYSIS</div>
+            <p style="color:#ccc;">Analysis data active.</p>
+        </div>
+
+        <!-- 17. SUB ADMINS -->
+        <div id="folderSubAdmins" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">👥 SUB-ADMIN MANAGEMENT</div>
+            <div class="subadmin-form">
+                <input type="text" id="subName" placeholder="Enter Sub-Admin Name">
+                <input type="tel" id="subWhatsapp" placeholder="Enter 10-digit WhatsApp" maxlength="10">
+                <button class="login-btn" onclick="addSubAdmin()">ADD SUB-ADMIN</button>
+            </div>
+            <div id="subAdminListContainer"></div>
+        </div>
+
+        <!-- 18. RESULTS -->
+        <div id="folderResults" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">🏆 DECLARE RESULT & PAYOUT</div>
+            <div class="subadmin-form">
+                <select id="adminMarketSelect" style="width:100%; background:#262626; color:#fff; padding:12px; border:1px solid #444; border-radius:6px; margin-bottom:10px;">
+                    <option value="DHAN LAXMI">DHAN LAXMI</option>
+                    <option value="786">786</option>
+                    <option value="DELHI BAZAR">DELHI BAZAR</option>
+                    <option value="SRIGANESH">SRIGANESH</option>
+                    <option value="FARIDABAD">FARIDABAD</option>
+                    <option value="GHAZIABAD">GHAZIABAD</option>
+                    <option value="GALI">GALI</option>
+                    <option value="DESAWER">DESAWER</option>
+                </select>
+                <input type="text" id="adminResultInput" placeholder="Enter Winning Number (e.g. 32)" maxlength="2" style="width:100%; background:#262626; color:#fff; padding:12px; border:1px solid #444; border-radius:6px; margin-bottom:10px; text-align:center; font-size:16px;">
+                <button class="login-btn" onclick="adminDeclareResult()">DECLARE & UPDATE LIVE TO FIRESTORE</button>
+            </div>
+        </div>
+
+        <!-- 19. DEPOSITS -->
+        <div id="folderDeposits" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">💰 ADD FUND REQUESTS</div>
+            <div id="adminDepositRequestsContainer">
+                <p style="color:#aaa; text-align:center;">Loading deposit requests...</p>
+            </div>
+        </div>
+
+        <!-- 20. WITHDRAWALS -->
+        <div id="folderWithdrawals" class="admin-folder">
+            <button class="back-btn" onclick="switchFolder('frontchart')">⬅ BACK TO LIVE BIDS</button>
+            <div class="section-title">📤 WITHDRAWAL REQUESTS & PAYOUT PROOF</div>
+            <div id="adminWithdrawalRequestsContainer">
+                <p style="color:#aaa; text-align:center;">Loading withdrawal requests...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCz-hJxuNnIZcYQhkS1Etshv1C_dhKMSTY",
+            authDomain: "royal-satta-1993.firebaseapp.com",
+            projectId: "royal-satta-1993",
+            storageBucket: "royal-satta-1993.firebasestorage.app",
+            messagingSenderId: "565178922133",
+            appId: "1:565178922133:web:4ef7e5c32d01b95589579c"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        let SUPER_ADMINS = { "8076010690": "10081993" };
+        let subAdminsList = [];
+        let auditLogs = [];
+
+        let marketBidsData = {
+            "DHAN LAXMI": {}, "786": {}, "DELHI BAZAR": {}, "SRIGANESH": {},
+            "FARIDABAD": {}, "GHAZIABAD": {}, "GALI": {}, "DESAWER": {}
+        };
+
+        Object.keys(marketBidsData).forEach(market => {
+            for (let i = 0; i <= 99; i++) {
+                let numStr = i < 10 ? '0' + i : '' + i;
+                marketBidsData[market][numStr] = 0;
+            }
+        });
+
+        window.onload = function() {
+            let savedAdmin = localStorage.getItem('royal_admin_logged');
+            if (savedAdmin) { initDashboard(); }
+            loadSettingsFromFirestore();
+        };
+
+        // Fullscreen Image Modal Functions
+        function openFullscreenImage(imgSrc) {
+            let modal = document.getElementById('imgModalOverlay');
+            let modalImg = document.getElementById('imgModalContent');
+            if(modal && modalImg) {
+                modalImg.src = imgSrc;
+                modal.style.display = 'flex';
+                history.pushState({ modalOpen: true }, "");
+            }
+        }
+
+        function closeFullscreenImage() {
+            let modal = document.getElementById('imgModalOverlay');
+            if(modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        window.onpopstate = function(event) {
+            closeFullscreenImage();
+        };
+
+        function verifyLogin() {
+            let mob = document.getElementById('adminMob').value.trim();
+            let pass = document.getElementById('adminPass').value.trim();
+            if (!mob || !pass) { alert("Kripya Mobile Number aur Password dono daalein!"); return; }
+            if (SUPER_ADMINS[mob] && SUPER_ADMINS[mob] === pass) {
+                localStorage.setItem('royal_admin_logged', mob);
+                initDashboard();
+                return;
+            }
+            alert("Galat Number ya Password hai!");
+        }
+
+        function initDashboard() {
+            document.getElementById('adminLoginView').style.display = 'none';
+            let dash = document.getElementById('adminDashboardView');
+            dash.style.display = 'flex';
+            document.getElementById('welcomeAdminText').innerText = "SuperAdmin: " + localStorage.getItem('royal_admin_logged');
+
+            fetchLiveBidsFromFirestore();
+            renderFrontGridChart();
+            loadSettingsFromFirestore();
+            loadSubAdminsFromFirestore();
+            loadMarketTiming();
+            listenAdminDepositRequests();
+            listenAdminWithdrawalRequests();
+            loadAdminMasterUserHistory();
+        }
+
+        function fetchLiveBidsFromFirestore() {
+            db.collection("bids").onSnapshot((snapshot) => {
+                Object.keys(marketBidsData).forEach(m => {
+                    for (let i = 0; i <= 99; i++) {
+                        let numStr = i < 10 ? '0' + i : '' + i;
+                        marketBidsData[m][numStr] = 0;
+                    }
+                });
+                snapshot.forEach((doc) => {
+                    let data = doc.data();
+                    let mkt = data.market;
+                    let num = data.number;
+                    let amt = data.amount || 0;
+                    if (num && num.startsWith('J-')) {
+                        let jodiNum = num.substring(2);
+                        if (marketBidsData[mkt] && marketBidsData[mkt][jodiNum] !== undefined) {
+                            marketBidsData[mkt][jodiNum] += amt;
+                        }
+                    }
+                });
+                renderFrontGridChart();
+            });
+        }
+
+        function toggleMenu() {
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function switchFolder(folderName) {
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = 'none';
+
+            let allFolders = document.querySelectorAll('.admin-folder');
+            allFolders.forEach(folder => folder.classList.remove('active'));
+
+            let folderMap = {
+                'frontchart': 'folderFrontChart',
+                'contactsettings': 'folderContactSettings',
+                'upiqrsettings': 'folderUpiQrSettings',
+                'superadminsettings': 'folderSuperAdminSettings',
+                'bulkcontrol': 'folderBulkControl',
+                'closingReports': 'folderClosingReports',
+                'winningclaims': 'folderWinningClaims',
+                'userblockctrl': 'folderUserBlockCtrl',
+                'waLogs': 'folderWaLogs',
+                'userpanelctrl': 'folderUserPanelCtrl',
+                'timings': 'folderTimings',
+                'ledger': 'folderLedger',
+                'profitloss': 'folderProfitloss',
+                'auditlogs': 'folderAuditlogs',
+                'userhistory': 'folderUserHistory',
+                'singleuserdetail': 'folderSingleUserDetail',
+                'analysis': 'folderAnalysis',
+                'subadmins': 'folderSubAdmins',
+                'results': 'folderResults',
+                'deposits': 'folderDeposits',
+                'withdrawals': 'folderWithdrawals'
+            };
+
+            let targetId = folderMap[folderName];
+            if (targetId) {
+                let targetEl = document.getElementById(targetId);
+                if (targetEl) { targetEl.classList.add('active'); }
+            }
+        }
+
+        function listenAdminDepositRequests() {
+            let container = document.getElementById('adminDepositRequestsContainer');
+            if(!container) return;
+
+            db.collection("deposit_requests").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                container.innerHTML = '';
+                if(snapshot.empty) {
+                    container.innerHTML = `<p style="color:#aaa; text-align:center;">No deposit requests found.</p>`;
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    let d = doc.data();
+                    let reqId = doc.id;
+                    let timeStr = d.timestamp ? d.timestamp.toDate().toLocaleString() : '';
+                    let statusColor = d.status === 'Approved' ? '#4caf50' : (d.status === 'Rejected' ? '#ff5252' : '#d4af37');
+
+                    let screenshotHtml = d.screenshot ? `<div style="margin-top:8px; text-align:center;"><img src="${d.screenshot}" alt="Payment Screenshot" onclick="openFullscreenImage('${d.screenshot}')" style="width:120px; height:120px; object-fit:contain; border:1px solid #444; border-radius:6px; background:#fff; cursor:pointer;"><p style="font-size:10px; color:#d4af37; margin-top:2px;">Click image to view large</p></div>` : '';
+
+                    container.innerHTML += `
+                        <div class="request-card">
+                            <p><b>User Phone:</b> <span style="color:#d4af37;">${d.phone}</span></p>
+                            <p><b>Amount:</b> ₹${d.amount}</p>
+                            <p><b>Time:</b> ${timeStr}</p>
+                            <p><b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${d.status}</span></p>
+                            ${screenshotHtml}
+                            ${d.status === 'Pending' ? `
+                                <div style="margin-top:10px; display:flex; gap:8px;">
+                                    <button class="login-btn" style="padding:8px; font-size:12px; background:#4caf50; color:#fff;" onclick="approveDeposit('${reqId}', '${d.phone}', ${d.amount}, '${d.screenshot || ''}')">APPROVE & ADD FUND</button>
+                                    <button onclick="rejectDeposit('${reqId}')" style="background:#ff5252; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold; flex:1;">REJECT</button>
+                                </div>
+                            ` : `<p style="margin-top:6px; color:#aaa; text-align:center;"><i>Processed</i></p>`}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function approveDeposit(reqId, userPhone, amount, screenshotBase64) {
+            let userDocRef = db.collection("users").doc(userPhone);
+
+            db.runTransaction((transaction) => {
+                return transaction.get(userDocRef).then((doc) => {
+                    let currentWallet = doc.exists ? (doc.data().wallet || 0) : 0;
+                    let newWalletBalance = currentWallet + amount;
+
+                    transaction.set(userDocRef, { wallet: newWalletBalance, phone: userPhone }, { merge: true });
+                    transaction.update(db.collection("deposit_requests").doc(reqId), { status: 'Approved' });
+
+                    let historyRef = db.collection("users").doc(userPhone).collection("len_den").doc();
+                    let historyData = {
+                        type: `Add Fund Approved (Online)`,
+                        amount: amount,
+                        walletAfter: newWalletBalance,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if(screenshotBase64) { historyData.screenshot = screenshotBase64; }
+                    transaction.set(historyRef, historyData);
+                });
+            }).then(() => {
+                alert(`Deposit of ₹${amount} approved successfully for ${userPhone}!`);
+            }).catch((err) => {
+                alert("Error: " + (err.message || err));
+            });
+        }
+
+        function rejectDeposit(reqId) {
+            db.collection("deposit_requests").doc(reqId).update({
+                status: 'Rejected'
+            }).then(() => alert("Deposit request rejected!"));
+        }
+
+        function listenAdminWithdrawalRequests() {
+            let container = document.getElementById('adminWithdrawalRequestsContainer');
+            if(!container) return;
+
+            db.collection("withdraw_requests").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                container.innerHTML = '';
+                if(snapshot.empty) {
+                    container.innerHTML = `<p style="color:#aaa; text-align:center;">No withdrawal requests found.</p>`;
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    let d = doc.data();
+                    let reqId = doc.id;
+                    let timeStr = d.timestamp ? d.timestamp.toDate().toLocaleString() : '';
+                    let statusColor = d.status === 'Approved' ? '#4caf50' : (d.status === 'Rejected' ? '#ff5252' : '#d4af37');
+
+                    container.innerHTML += `
+                        <div class="request-card">
+                            <p><b>User Phone:</b> <span style="color:#d4af37;">${d.phone}</span></p>
+                            <p><b>Amount:</b> ₹${d.amount} | <b>Mode:</b> ${d.mode}</p>
+                            <p><b>Details:</b> ${d.details || 'N/A'}</p>
+                            <p><b>Time:</b> ${timeStr}</p>
+                            <p><b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${d.status}</span></p>
+                            ${d.status === 'Pending' ? `
+                                <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column;">
+                                    <input type="file" id="proofFile_${reqId}" accept="image/*" style="font-size:11px; padding:4px; background:#1a1a1a;">
+                                    <button class="login-btn" style="padding:8px; font-size:12px;" onclick="approveWithdrawal('${reqId}', '${d.phone}',${d.amount})">APPROVE & SEND PROOF</button>
+                                    <button onclick="rejectWithdrawal('${reqId}')" style="background:#ff5252; color:#fff; border:none; padding:8px; border-radius:6px; cursor:pointer; font-weight:bold;">REJECT</button>
+                                </div>
+                            ` : `<p style="margin-top:6px; color:#aaa;"><i>Processed</i></p>`}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function approveWithdrawal(reqId, userPhone, amount) {
+            let fileInput = document.getElementById(`proofFile_${reqId}`);
+            if(!fileInput.files || !fileInput.files[0]) {
+                alert("Kripya payout ka payment screenshot / proof upload karein!");
+                return;
+            }
+
+            let file = fileInput.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let proofBase64 = e.target.result;
+                db.collection("withdraw_requests").doc(reqId).update({
+                    status: 'Approved',
+                    proofImage: proofBase64,
+                    dismissedByUser: false
+                }).then(() => {
+                    db.collection("users").doc(userPhone).collection("len_den").add({
+                        type: `Withdrawal Approved`,
+                        amount: amount,
+                        screenshot: proofBase64,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    alert("Withdrawal approved and proof sent successfully!");
+                }).catch(err => alert("Error: " + err.message));
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function rejectWithdrawal(reqId) {
+            db.collection("withdraw_requests").doc(reqId).update({
+                status: 'Rejected'
+            }).then(() => alert("Rejected!"));
+        }
+
+        function loadAdminMasterUserHistory() {
+            let container = document.getElementById('adminMasterUserHistoryContainer');
+            if(!container) return;
+
+            db.collection("users").onSnapshot((userSnap) => {
+                container.innerHTML = '';
+                if(userSnap.empty) {
+                    container.innerHTML = `<p style="color:#aaa; text-align:center;">No users found.</p>`;
+                    return;
+                }
+
+                userSnap.forEach((userDoc) => {
+                    let d = userDoc.data();
+                    let uPhone = d.phone;
+                    container.innerHTML += `
+                        <div class="request-card" style="border-color:#4caf50; cursor:pointer;" onclick="openSingleUserDetail('${uPhone}', ${d.wallet || 0})">
+                            <p><b>User Account:</b> <span style="color:#d4af37; font-size:15px; text-decoration:underline;">${uPhone}</span></p>
+                            <p><b>Wallet Balance:</b> ₹${d.wallet || 0} <span style="float:right; color:#4caf50; font-size:12px;">👉 Click to view Details</span></p>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // --- ACCORDION TOGGLE WITH EMPTY ALERTS FOR BIDS & LEN-DEN ---
+        function openSingleUserDetail(phone, wallet) {
+            switchFolder('singleuserdetail');
+            document.getElementById('singleUserTitle').innerText = `USER ACCOUNT: ${phone}`;
+            let detailContainer = document.getElementById('singleUserDetailContainer');
+            detailContainer.innerHTML = `
+                <div style="background:#222; border:1px solid #d4af37; padding:12px; border-radius:8px; margin-bottom:15px;">
+                    <h3 style="color:#4caf50; margin-bottom:5px;">Current Wallet Balance: ₹${wallet}</h3>
+                    <p style="color:#aaa; font-size:12px;">Phone Number: ${phone}</p>
+                </div>
+                
+                <div class="accordion-header" onclick="toggleAccordion('bidsSection', '${phone}')">
+                    <span>📊 Market-wise Bid History</span> <span>▼</span>
+                </div>
+                <div id="bidsSection" class="accordion-content">
+                    <div id="singleUserBidsContainer"><p style="color:#aaa; padding:10px;">Loading bids...</p></div>
+                </div>
+
+                <div class="accordion-header" onclick="toggleAccordion('lendenSection', '${phone}')" style="margin-top:15px;">
+                    <span>💳 Len-Den History (Add Fund & Withdrawals)</span> <span>▼</span>
+                </div>
+                <div id="lendenSection" class="accordion-content">
+                    <div id="singleUserLenDenContainer"><p style="color:#aaa; padding:10px;">Loading len-den...</p></div>
+                </div>
+            `;
+        }
+
+        let loadedSections = {};
+
+        function toggleAccordion(sectionId, phone) {
+            let content = document.getElementById(sectionId);
+            let isOpen = content.classList.contains('open');
+
+            if (isOpen) {
+                content.classList.remove('open');
+            } else {
+                content.classList.add('open');
+                if (!loadedSections[phone + '_' + sectionId]) {
+                    if (sectionId === 'bidsSection') {
+                        fetchUserBidsForAdmin(phone);
+                    } else if (sectionId === 'lendenSection') {
+                        fetchUserLenDenForAdmin(phone);
+                    }
+                    loadedSections[phone + '_' + sectionId] = true;
+                }
+            }
+        }
+
+        function fetchUserBidsForAdmin(phone) {
+            let bidsBox = document.getElementById('singleUserBidsContainer');
+            db.collection("bids").where("phone", "==", phone).orderBy("timestamp", "desc").get().then((bidSnap) => {
+                bidsBox.innerHTML = '';
+                if(bidSnap.empty) {
+                    alert("Is user ki koi Bid History uplabdh nahi hai!");
+                    bidsBox.innerHTML = `<p style="color:#ff5252; font-size:13px; padding:10px;">No bids found.</p>`;
+                    return;
+                }
+                bidSnap.forEach((bDoc) => {
+                    let b = bDoc.data();
+                    let t = b.timestamp ? b.timestamp.toDate().toLocaleString() : '';
+                    bidsBox.innerHTML += `
+                        <div style="background:#1a1a1a; padding:10px; border-radius:6px; margin-bottom:8px; border-left:3px solid #d4af37; font-size:13px;">
+                            <p><b>Market:</b> <span style="color:#d4af37;">${b.market}</span> | <b>Number:</b> ${b.number} | <b>Amount:</b> ₹${b.amount}</p>
+                            <p style="color:#aaa; font-size:11px; margin-top:3px;">Time: ${t} | Status: ${b.status}</p>
+                        </div>
+                    `;
+                });
+            }).catch(err => {
+                alert("Is user ki koi Bid History uplabdh nahi hai!");
+                bidsBox.innerHTML = `<p style="color:#ff5252; font-size:13px; padding:10px;">No bids found.</p>`;
+            });
+        }
+
+        function fetchUserLenDenForAdmin(phone) {
+            let lendenBox = document.getElementById('singleUserLenDenContainer');
+            db.collection("users").doc(phone).collection("len_den").orderBy("timestamp", "desc").get().then((ldSnap) => {
+                lendenBox.innerHTML = '';
+                if(ldSnap.empty) {
+                    alert("Is user ki koi Len-Den History uplabdh nahi hai!");
+                    lendenBox.innerHTML = `<p style="color:#ff5252; font-size:13px; padding:10px;">No len-den records found.</p>`;
+                    return;
+                }
+                ldSnap.forEach((ldDoc) => {
+                    let ld = ldDoc.data();
+                    let t = ld.timestamp ? ld.timestamp.toDate().toLocaleString() : '';
+                    let amtColor = ld.type.includes('Debit') || ld.type.includes('Withdrawal') ? '#ff5252' : '#4caf50';
+                    let sign = ld.type.includes('Debit') || ld.type.includes('Withdrawal') ? '-' : '+';
+                    let imgTag = ld.screenshot ? `<div style="margin-top:6px;"><img src="${ld.screenshot}" onclick="openFullscreenImage('${ld.screenshot}')" style="width:90px; height:90px; object-fit:contain; border:1px solid #444; border-radius:4px; background:#fff; cursor:pointer;" alt="Proof"><p style="font-size:10px; color:#d4af37;">Click to zoom</p></div>` : '';
+
+                    lendenBox.innerHTML += `
+                        <div style="background:#1a1a1a; padding:10px; border-radius:6px; margin-bottom:8px; border-left:3px solid ${amtColor}; font-size:13px;">
+                            <p><b>Type:</b> ${ld.type}</p>
+                            <p><b>Amount:</b> <span style="color:${amtColor}; font-weight:bold;">${sign}₹${ld.amount}</span></p>
+                            <p style="color:#aaa; font-size:11px;">Time: ${t} | Wallet After: ₹${ld.walletAfter !== undefined ? ld.walletAfter : '--'}</p>
+                            ${imgTag}
+                        </div>
+                    `;
+                });
+            }).catch(err => {
+                alert("Is user ki koi Len-Den History uplabdh nahi hai!");
+                lendenBox.innerHTML = `<p style="color:#ff5252; font-size:13px; padding:10px;">No len-den records found.</p>`;
+            });
+        }
+
+        function saveContactSettings() {
+            let wp = document.getElementById('adminWhatsAppInput').value.trim();
+            let tg = document.getElementById('adminTelegramInput').value.trim();
+            if (!wp || !tg) { alert("Sahi details bharein!"); return; }
+            db.collection("settings").doc("contact_config").set({ whatsapp: wp, telegram: tg }, { merge: true }).then(() => {
+                alert("WhatsApp & Telegram updated!");
+            });
+        }
+
+        function saveUpiQrSettings() {
+            let upiId = document.getElementById('adminUpiIdInput').value.trim();
+            let fileInput = document.getElementById('adminQrImageInput');
+            if (!upiId) { alert("Kripya UPI ID bharein!"); return; }
+
+            if (fileInput.files && fileInput.files[0]) {
+                let file = fileInput.files[0];
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let maxW = 500, maxH = 500;
+                        let width = img.width, height = img.height;
+                        if (width > height) { if (width > maxW) { height *= maxW / width; width = maxW; } }
+                        else { if (height > maxH) { width *= maxH / height; height = maxH; } }
+                        canvas.width = width; canvas.height = height;
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+                        db.collection("settings").doc("upi_config").set({
+                            upiId: upiId,
+                            qrImage: compressedBase64,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).then(() => {
+                            alert("UPI ID aur QR Code successfully update ho gaye!");
+                            document.getElementById('adminCurrentQrPreview').src = compressedBase64;
+                            logAction(`Updated UPI ID to ${upiId} with new QR Image`);
+                        }).catch(err => alert("Error: " + err.message));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                db.collection("settings").doc("upi_config").set({
+                    upiId: upiId,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).then(() => {
+                    alert("UPI ID successfully update ho gayi!");
+                    logAction(`Updated UPI ID to ${upiId}`);
+                }).catch(err => alert("Error: " + err.message));
+            }
+        }
+
+        function submitManualLedger() {
+            let mob = document.getElementById('ledgerUserMob').value.trim();
+            let actionType = document.getElementById('ledgerActionType').value;
+            let amount = parseInt(document.getElementById('ledgerAmountInput').value);
+            let reason = document.getElementById('ledgerReasonInput').value.trim() || "Manual Admin Update";
+
+            if (mob.length !== 10) { alert("Kripya 10 ankon ka sahi mobile number daalein!"); return; }
+            if (!amount || amount <= 0) { alert("Kripya maanya rashi (amount) darj karein!"); return; }
+
+            let userDocRef = db.collection("users").doc("+91" + mob);
+
+            db.runTransaction((transaction) => {
+                return transaction.get(userDocRef).then((doc) => {
+                    let currentWallet = doc.exists ? (doc.data().wallet || 0) : 0;
+                    let newWalletBalance = actionType === "CREDIT" ? currentWallet + amount : currentWallet - amount;
+                    if (newWalletBalance < 0) { throw "User ke wallet me itna balance nahi hai ki debit kiya ja sake!"; }
+
+                    transaction.set(userDocRef, { wallet: newWalletBalance, phone: "+91" + mob }, { merge: true });
+
+                    let historyRef = db.collection("users").doc("+91" + mob).collection("len_den").doc();
+                    transaction.set(historyRef, {
+                        type: `Admin ${actionType} (${reason})`,
+                        amount: amount,
+                        walletAfter: newWalletBalance,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+            }).then(() => {
+                alert(`Successfully ${actionType} of ₹${amount} for user +91${mob}!`);
+                document.getElementById('ledgerUserMob').value = '';
+                document.getElementById('ledgerAmountInput').value = '';
+                document.getElementById('ledgerReasonInput').value = '';
+            }).catch((err) => { alert("Error: " + (err.message || err)); });
+        }
+
+        function saveUserPanelConfig() {
+            let redBanner = document.getElementById('redBannerInput').value.trim();
+            let popupMsg = document.getElementById('popupMsgInput').value.trim();
+            db.collection("settings").doc("userPanel").set({ redBanner: redBanner, popupMsg: popupMsg }, { merge: true }).then(() => {
+                alert("User Panel settings update ho gayi!");
+            });
+        }
+
+        function loadMarketTiming() {
+            let mkt = document.getElementById('timingMarketSelect').value;
+            db.collection("market_timings").doc(mkt).get().then(doc => {
+                if(doc.exists) {
+                    document.getElementById('marketCloseTimeInput').value = doc.data().closeTime || "18:00";
+                    document.getElementById('marketStatusInput').value = doc.data().status || "OPEN";
+                }
+            });
+        }
+
+        function saveMarketTiming() {
+            let mkt = document.getElementById('timingMarketSelect').value;
+            db.collection("market_timings").doc(mkt).set({
+                closeTime: document.getElementById('marketCloseTimeInput').value,
+                status: document.getElementById('marketStatusInput').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => alert("Timing saved!"));
+        }
+
+        function adminDeclareResult() {
+            let market = document.getElementById('adminMarketSelect').value;
+            let resNum = document.getElementById('adminResultInput').value.trim();
+            if (!resNum || resNum.length !== 2) { alert("Sahi 2-digit number daalein!"); return; }
+
+            db.collection("Results").doc(market).set({
+                result: resNum,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).then(() => alert(`Result Declared for ${market} -> ${resNum}`));
+        }
+
+        function addSubAdmin() {
+            let name = document.getElementById('subName').value.trim();
+            let wp = document.getElementById('subWhatsapp').value.trim();
+            if (!name || wp.length !== 10) { alert("Sahi details bharein!"); return; }
+            subAdminsList.push({ name: name, whatsapp: wp });
+            db.collection("settings").doc("sub_admins").set({ list: subAdminsList }).then(() => {
+                alert("Sub-admin added!"); renderSubAdminList();
+            });
+        }
+
+        function renderSubAdminList() {
+            let container = document.getElementById('subAdminListContainer');
+            if(!container) return; container.innerHTML = '';
+            subAdminsList.forEach((sub, index) => {
+                container.innerHTML += `<div class="subadmin-item"><div><b>${sub.name}</b> (${sub.whatsapp})</div><button onclick="removeSubAdmin(${index})" style="background:#b71c1c; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">REMOVE</button></div>`;
+            });
+        }
+
+        function removeSubAdmin(index) {
+            subAdminsList.splice(index, 1);
+            db.collection("settings").doc("sub_admins").set({ list: subAdminsList }).then(() => renderSubAdminList());
+        }
+
+        function loadSubAdminsFromFirestore() {
+            db.collection("settings").doc("sub_admins").get().then((doc) => {
+                if (doc.exists) { subAdminsList = doc.data().list || []; renderSubAdminList(); }
+            });
+        }
+
+        function loadSettingsFromFirestore() {
+            db.collection("settings").doc("contact_config").get().then((doc) => {
+                if (doc.exists) {
+                    if(document.getElementById('adminWhatsAppInput')) document.getElementById('adminWhatsAppInput').value = doc.data().whatsapp || "";
+                    if(document.getElementById('adminTelegramInput')) document.getElementById('adminTelegramInput').value = doc.data().telegram || "";
+                }
+            });
+            db.collection("settings").doc("upi_config").get().then((doc) => {
+                if (doc.exists) {
+                    if(document.getElementById('adminUpiIdInput')) document.getElementById('adminUpiIdInput').value = doc.data().upiId || "";
+                    if(doc.data().qrImage && document.getElementById('adminCurrentQrPreview')) {
+                        document.getElementById('adminCurrentQrPreview').src = doc.data().qrImage;
+                    }
+                }
+            });
+        }
+
+        function logAction(actText) {
+            let timeStr = new Date().toLocaleTimeString();
+            auditLogs.unshift({ time: timeStr, action: actText });
+            renderAuditLogs();
+        }
+
+        function renderAuditLogs() {
+            let container = document.getElementById('auditLogsContainer');
+            if(!container) return; container.innerHTML = '';
+            auditLogs.forEach(l => container.innerHTML += `<div style="border-bottom:1px solid #333; padding:4px 0;">[${l.time}] ${l.action}</div>`);
+        }
+
+        function renderFrontGridChart() {
+            let mkt = document.getElementById('frontMarketSelect').value;
+            let tbody = document.getElementById('frontGridTableBody'); 
+            if(!tbody) return; tbody.innerHTML = '';
+            let data = marketBidsData[mkt] || {};
+            for (let i = 0; i <= 49; i++) {
+                let n1 = i < 10 ? '0' + i : '' + i, n2 = (i + 50) < 10 ? '0' + (i + 50) : '' + (i + 50);
+                tbody.innerHTML += `<tr><td><b>${n1}</b></td><td>₹${data[n1] || 0}</td><td><b>${n2}</b></td><td>₹${data[n2] || 0}</td></tr>`;
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('royal_admin_logged');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
