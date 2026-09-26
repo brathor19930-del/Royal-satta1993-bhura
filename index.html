@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Satta 1993 - Live Platform</title>
+    <meta name="theme-color" content="#121212">
+    <!-- Firebase SDK Scripts (Firestore only) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            padding-bottom: 90px;
+        }
+
+        /* Top Header */
+        .header {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-icon, .wallet {
+            font-size: 22px;
+            color: #d4af37;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .back-btn {
+            font-size: 26px;
+            color: #d4af37;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .logo {
+            font-size: 19px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .logo span { color: #d4af37; }
+
+        /* Login / Auth Screen Styles */
+        #authView {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #121212; z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .auth-card {
+            background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; width: 100%; max-width: 360px; padding: 25px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.9);
+        }
+        .auth-card h2 { color: #d4af37; margin-bottom: 20px; font-size: 22px; }
+        .auth-card input {
+            width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; margin-bottom: 15px; text-align: center;
+        }
+
+        /* Side Menu Drawer */
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background-color: #1a1a1a; z-index: 3000; transition: 0.3s ease;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.8); border-right: 1px solid #333;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header {
+            background: #222; padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #333;
+        }
+        .user-avatar {
+            font-size: 24px; background: #d4af37; color: #000; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;
+        }
+        .user-info .phone { font-weight: bold; color: #d4af37; font-size: 15px; }
+        .user-info .status { font-size: 11px; color: #4caf50; }
+        .close-sidebar-btn { margin-left: auto; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+
+        .sidebar-links { list-style: none; padding: 10px 0; }
+        .sidebar-links li {
+            padding: 15px 20px; border-bottom: 1px solid #262626; color: #ccc; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 12px;
+        }
+        .sidebar-links li:hover { background: #2a2a2a; color: #d4af37; }
+        .sidebar-links .logout { color: #ff4d4d; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 2500;
+        }
+        .overlay.active { display: block; }
+
+        /* Red Scrolling Banner */
+        .marquee-container {
+            background-color: #cc0000; color: #ffffff; padding: 12px 0; font-size: 14px; font-weight: bold;
+            overflow: hidden; white-space: nowrap; border-bottom: 2px solid #ff4d4d;
+        }
+
+        /* Popup Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-box {
+            background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; width: 85%; max-width: 320px; padding: 20px; text-align: center;
+        }
+        .modal-box h3 { color: #d4af37; margin-bottom: 12px; font-size: 18px; }
+        .modal-box p { font-size: 14px; color: #ccc; margin-bottom: 20px; line-height: 1.5; }
+        .modal-close-btn {
+            background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 12px 25px;
+            font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%;
+        }
+
+        /* Large Centered Custom Notification Modal */
+        #customPopupOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .custom-popup-box {
+            background: #1a1a1a; border: 2px solid #d4af37; border-radius: 15px; width: 90%; max-width: 380px;
+            padding: 30px 20px; text-align: center; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.9);
+        }
+        .custom-popup-box h3 { color: #d4af37; font-size: 20px; margin-bottom: 15px; }
+        #customPopupText { font-size: 16px; color: #fff; line-height: 1.6; margin-bottom: 25px; display: block; }
+        .popup-close-x {
+            position: absolute; top: 12px; right: 15px; background: none; border: none;
+            color: #d4af37; font-size: 24px; font-weight: bold; cursor: pointer;
+        }
+        .custom-popup-btn {
+            background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none;
+            padding: 12px 30px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%;
+        }
+
+        .container { padding: 15px; }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px;
+        }
+        .action-btn-small {
+            background: #1f1f1f; border: 2px solid #d4af37; color: #d4af37; padding: 12px 5px;
+            border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            grid-column: span 2;
+        }
+
+        /* Games Section */
+        .games-section h3 { color: #d4af37; margin-bottom: 15px; font-size: 17px; }
+        .game-card {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .game-title { font-weight: bold; font-size: 18px; color: #d4af37; }
+        .status-badge { font-size: 12px; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
+        .status-open { background: #1b5e20; color: #4caf50; }
+        .status-closed { background: #b71c1c; color: #ff5252; }
+
+        .game-time { font-size: 13px; color: #aaa; margin-bottom: 15px; }
+        .game-footer-row { display: flex; justify-content: space-between; align-items: center; }
+        .game-numbers { display: flex; gap: 8px; }
+        .box {
+            background: #262626; border: 1px solid #444; width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #d4af37; border-radius: 6px;
+        }
+        .card-play-btn {
+            background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none;
+            padding: 10px 22px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px;
+        }
+        .card-play-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        .sub-page-view { display: none; }
+        .section-box-title { color: #d4af37; font-size: 14px; font-weight: bold; margin-bottom: 10px; }
+
+        .input-card {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 15px; margin-bottom: 20px;
+        }
+        .input-card input, .input-card select {
+            width: 100%; background: #262626; border: 1px solid #444; padding: 14px; border-radius: 8px; color: #fff; font-size: 15px; outline: none; margin-bottom: 10px;
+        }
+
+        .quick-select-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .quick-btn {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 12px 5px; text-align: center; cursor: pointer;
+        }
+        .quick-btn .amt { color: #d4af37; font-weight: bold; font-size: 16px; display: block; margin-bottom: 4px; }
+        .quick-btn .bonus { color: #4caf50; font-size: 11px; font-weight: bold; }
+
+        .upi-apps-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .upi-app-btn {
+            background: #1f1f1f; border: 1px solid #d4af37; color: #fff; padding: 12px 5px;
+            border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 12px;
+        }
+
+        .payment-modes {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .mode-card {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 15px 10px; text-align: center; cursor: pointer;
+        }
+        .mode-card.active { border: 2px solid #d4af37; }
+        .mode-card span { color: #d4af37; font-weight: bold; font-size: 13px; }
+
+        .qr-box {
+            background: #fff; padding: 10px; display: inline-block; border-radius: 8px; margin-bottom: 10px; text-align: center; width: 100%;
+        }
+        .qr-box img { width: 160px; height: 160px; object-fit: contain; }
+
+        .proceed-btn {
+            width: 100%; background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none;
+            padding: 15px; font-weight: bold; border-radius: 10px; font-size: 16px; cursor: pointer; text-align: center; margin-bottom: 15px;
+        }
+
+        .admin-panel-card {
+            background: #1a1a1a; border: 1px solid #d4af37; border-radius: 10px; padding: 15px; margin-bottom: 15px; font-size: 13px;
+        }
+        .admin-panel-card p { margin-bottom: 6px; color: #ccc; }
+        .admin-panel-card span { color: #d4af37; font-weight: bold; }
+
+        .admin-chat-box {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 15px; margin-top: 20px;
+        }
+        .chat-messages {
+            height: 180px; overflow-y: auto; background: #262626; border: 1px solid #444; border-radius: 8px; padding: 10px; font-size: 13px; color: #ccc; margin-bottom: 10px;
+        }
+        .chat-msg-item {
+            background: #1f1f1f; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #d4af37;
+        }
+
+        .refer-card {
+            background: linear-gradient(135deg, #1b1535, #121212); border: 2px solid #d4af37; border-radius: 15px;
+            padding: 25px 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+        .refer-card h2 { color: #fff; font-size: 20px; margin-bottom: 10px; }
+        .refer-card .percentage { color: #d4af37; font-size: 45px; font-weight: bold; margin: 15px 0; }
+        .refer-code-box {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 20px;
+        }
+        .code-text { font-size: 24px; font-weight: bold; color: #d4af37; letter-spacing: 2px; margin-top: 5px; }
+        .copy-link-btn {
+            width: 100%; background: #d4af37; color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px;
+        }
+        .whatsapp-share-btn {
+            width: 100%; background: #25d366; color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer;
+        }
+
+        .history-card {
+            background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 15px; margin-bottom: 12px; font-size: 13px;
+        }
+        .history-card p { margin-bottom: 5px; color: #bbb; }
+        .history-card span { color: #d4af37; font-weight: bold; }
+        .no-history {
+            text-align: center; font-size: 16px; font-weight: bold; color: #ff5252; margin-top: 40px; letter-spacing: 1px;
+        }
+
+        .rate-card {
+            background: #1a1a1a; border: 1px solid #d4af37; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px;
+        }
+        .rate-card h3 { color: #d4af37; font-size: 18px; margin-bottom: 8px; }
+        .rate-card p { font-size: 20px; font-weight: bold; color: #fff; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; border-top: 1px solid #333;
+            display: flex; justify-content: space-around; padding: 10px 0; z-index: 100;
+        }
+        .nav-item { background: none; border: none; color: #888; font-size: 13px; text-align: center; cursor: pointer; font-weight: bold; }
+        .nav-item span { font-size: 18px; }
+        .nav-item.active { color: #d4af37; }
+
+        /* Market Bidding Tabs & Views */
+        .market-view { display: none; }
+        .sub-tabs { display: flex; justify-content: space-around; background: #1a1a1a; border-bottom: 1px solid #333; padding: 12px 0; overflow-x: auto; }
+        .sub-tab-btn { background: none; border: none; color: #888; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; padding: 0 10px; }
+        .sub-tab-btn.active { color: #d4af37; border-bottom: 2px solid #d4af37; padding-bottom: 4px; }
+        
+        .bidding-tab-content { display: none; padding-top: 10px; }
+        .bidding-tab-content.active { display: block; }
+
+        .jodi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+        .jodi-item { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 6px; text-align: center; }
+        .jodi-num { font-size: 13px; color: #d4af37; font-weight: bold; margin-bottom: 4px; }
+        .jodi-input { width: 100%; background: #262626; border: 1px solid #444; border-radius: 4px; color: #fff; text-align: center; font-size: 12px; padding: 6px; outline: none; }
+
+        .haruf-section-title { color: #d4af37; font-size: 14px; font-weight: bold; margin: 15px 0 8px 0; text-align: center; letter-spacing: 1px; }
+        .haruf-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
+
+        .copy-paste-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .copy-paste-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .copy-paste-card input { width: 100%; background: #262626; border: 1px solid #444; padding: 12px; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .radio-group { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; font-size: 13px; color: #ccc; }
+        .radio-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        
+        .table-header-row { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #262626; padding: 10px; border-radius: 6px; text-align: center; font-size: 12px; color: #d4af37; font-weight: bold; margin-top: 15px; }
+
+        .bidding-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; border-top: 2px solid #d4af37; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; z-index: 5000; }
+        .total-bid-text { font-size: 14px; color: #d4af37; font-weight: bold; }
+        .place-order-btn { background: linear-gradient(90deg, #d4af37, #aa8c2c); color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN / OTP AUTH VIEW -->
+    <div id="authView" style="display: none;">
+        <div class="auth-card">
+            <h2>ROYAL SATTA 1993</h2>
+            <div id="stepPhone">
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Login ya Signup karne ke liye apna mobile number darj karein</p>
+                <input type="tel" id="loginPhoneInput" placeholder="Mobile Number (10 digits)" maxlength="10">
+                <button class="proceed-btn" onclick="sendOtp()">SEND OTP</button>
+            </div>
+            <div id="stepOtp" style="display: none;">
+                <p style="font-size: 13px; color: #4caf50; margin-bottom: 15px;" id="otpSentMsg">OTP bhej diya gaya hai</p>
+                <input type="text" id="loginOtpInput" placeholder="Enter 6-digit OTP" maxlength="6">
+                <button class="proceed-btn" onclick="verifyOtp()">VERIFY & LOGIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Large Centered Custom Notification Modal -->
+    <div id="customPopupOverlay">
+        <div class="custom-popup-box">
+            <button class="popup-close-x" onclick="closeCustomPopup()">✕</button>
+            <h3>सूचनार्थ</h3>
+            <span id="customPopupText">संदेश यहाँ दिखाई देगा</span>
+            <button class="custom-popup-btn" onclick="closeCustomPopup()">ठीक है</button>
+        </div>
+    </div>
+
+    <!-- Popup Offer Modal -->
+    <div id="offerModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>📢 विशेष सूचना</h3>
+            <p id="adminPopupText">रॉयल सट्टा 1993 में आपका स्वागत है! अपने दोस्तों को शेयर करें और हर रेफर पर ₹50 का बोनस पाएं।</p>
+            <button class="modal-close-btn" onclick="closeModal()">ठीक है</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR DRAWER -->
+    <div id="sidebarDrawer" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-avatar" id="sidebarAvatar">👑</div>
+            <div class="user-info">
+                <div class="phone" id="sidebarPhoneDisplay">--</div>
+                <div class="status">● Active User</div>
+            </div>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <ul class="sidebar-links">
+            <li onclick="goHome(); toggleSidebar()">🏠 Home</li>
+            <li onclick="showProfile(); toggleSidebar()">👤 User Profile</li>
+            <li onclick="showWinningHistory(); toggleSidebar()">🏆 Winning History</li>
+            <li onclick="showHistory(); toggleSidebar()">📜 Bid History</li>
+            <li onclick="showLenDenHistory(); toggleSidebar()">💳 Len-Den History</li>
+            <li onclick="showBanking(); toggleSidebar()">🏦 Banking Details</li>
+            <li onclick="showGameRate(); toggleSidebar()">📊 Game Rate</li>
+            <li onclick="showReferEarn(); toggleSidebar()">🎁 Refer & Earn (Bonus)</li>
+            <li onclick="showCustomerSupport(); toggleSidebar()">💬 Customer Support (Chat)</li>
+            <li class="logout" onclick="logoutUser()">🚪 Logout</li>
+        </ul>
+    </div>
+    <div id="sidebarOverlay" class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- HOME VIEW -->
+    <div id="homeView" class="main-view">
+        <header class="header">
+            <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+            <div class="logo">ROYAL SATTA <span>1993</span></div>
+            <div class="wallet" id="userWalletDisplay">🪙 ₹0</div>
+        </header>
+
+        <div class="marquee-container">
+            <marquee id="adminMarqueeText">🔥 रॉयल सट्टा 1993 में आपका स्वागत है! Jodi Rate: 10 ka 950 | Haruf Rate: 10 ka 95 🔥</marquee>
+        </div>
+
+        <main class="container">
+            <div class="action-buttons">
+                <button class="action-btn-small" onclick="showAddPoints()">➕ ADD FUND</button>
+                <button class="action-btn-small" onclick="showWithdrawPoints()">📤 WITHDRAW</button>
+                <button class="action-btn-small" onclick="openWhatsApp()">💬 WHATSAPP</button>
+                <button class="action-btn-small" onclick="openTelegram()">📢 TELEGRAM</button>
+            </div>
+
+            <div class="games-section">
+                <h3>🔥 ALL MARKETS & TIMINGS</h3>
+                <div id="markets-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- USER PROFILE VIEW -->
+    <div id="profileView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">USER PROFILE</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="input-card">
+                <label style="color:#aaa; font-size:12px;">Full Name / Username (Optional)</label>
+                <input type="text" id="profileName" placeholder="Set your username">
+                <label style="color:#aaa; font-size:12px;">Password (Optional)</label>
+                <input type="password" id="profilePassword" placeholder="Set a password">
+                <label style="color:#aaa; font-size:12px;">Phone Number</label>
+                <input type="text" id="profilePhone" readonly style="color: #888;">
+                <button class="proceed-btn" onclick="saveProfile()">UPDATE PROFILE</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- WINNING HISTORY VIEW -->
+    <div id="winningHistoryView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">WINNING HISTORY</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div id="winningHistoryContainer">
+                <div class="no-history">NO WINNING HISTORY FOUND</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- LEN-DEN HISTORY VIEW -->
+    <div id="lenDenHistoryView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">LEN-DEN HISTORY</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div id="lenDenListContainer">
+                <div class="no-history">NO LEN-DEN HISTORY FOUND</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- BANKING DETAILS VIEW -->
+    <div id="bankingView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">BANKING DETAILS (OPTIONAL)</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="input-card">
+                <input type="text" id="bankName" placeholder="Bank Name (Optional)">
+                <input type="text" id="accNumber" placeholder="Account Number (Optional)">
+                <input type="text" id="ifscCode" placeholder="IFSC Code (Optional)">
+                <input type="text" id="upiId" placeholder="UPI ID (Optional)">
+                <button class="proceed-btn" onclick="saveBanking()">SAVE DETAILS</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- GAME RATE VIEW -->
+    <div id="gameRateView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">GAME RATE</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="rate-card">
+                <h3>🎯 JODI RATE</h3>
+                <p>₹10 का ₹950</p>
+            </div>
+            <div class="rate-card">
+                <h3>🎯 HARUF RATE</h3>
+                <p>₹10 का ₹95</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- REFER & EARN VIEW -->
+    <div id="referEarnView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">REFER & EARN</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="refer-card">
+                <h2>दोस्तों को Refer करें, कमाई पाएं</h2>
+                <div class="percentage">3%</div>
+                <p style="color: #bbb; font-size: 13px;">हर successful deposit पर 3% bonus और नए user को मिलेगा ₹5 signup bonus!</p>
+            </div>
+            <div class="refer-code-box">
+                <p style="color: #aaa; font-size: 12px;">आपका REFERRAL CODE</p>
+                <div class="code-text" id="userReferralCode">ROYAL1993</div>
+            </div>
+            <button class="copy-link-btn" onclick="copyReferralLink()">🔗 Link Copy करें</button>
+            <button class="whatsapp-share-btn" onclick="shareDirectWhatsApp()">💬 WhatsApp पर Share करें</button>
+        </main>
+    </div>
+
+    <!-- CUSTOMER SUPPORT CHAT VIEW -->
+    <div id="customerSupportView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">CUSTOMER SUPPORT (CHAT)</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="section-box-title">💬 ADMIN से चैट करें</div>
+            <div class="admin-chat-box">
+                <div class="chat-messages" id="customerSupportChatBox">
+                    <div class="chat-msg-item">
+                        <span style="color:#d4af37; font-weight:bold;">Admin:</span> नमस्ते! कृपया अपनी समस्या यहाँ लिखें, हम जल्द ही आपको उत्तर देंगे।
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    <input type="text" id="userSupportMsgInput" placeholder="अपना संदेश यहाँ लिखें..." style="flex:1; background:#262626; border:1px solid #444; padding:10px; border-radius:6px; color:#fff; font-size:13px; outline:none;">
+                    <button onclick="sendSupportMessage()" style="background:#d4af37; color:#000; border:none; padding:10px 15px; font-weight:bold; border-radius:6px; cursor:pointer;">SEND</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- HISTORY VIEW -->
+    <div id="historyView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">BID HISTORY</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div id="historyListContainer">
+                <div class="no-history">NO BID HISTORY FOUND</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD FUND VIEW -->
+    <div id="addPointsView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">ADD FUND</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="section-box-title">ENTER AMOUNT</div>
+            <div class="input-card">
+                <input type="number" id="customAddAmount" placeholder="₹ 100" oninput="updateQrCode()">
+            </div>
+            <div class="section-box-title">QUICK SELECT</div>
+            <div class="quick-select-grid">
+                <div class="quick-btn" onclick="selectAmount(100)"><span class="amt">₹100</span><span class="bonus">+5% Bonus</span></div>
+                <div class="quick-btn" onclick="selectAmount(500)"><span class="amt">₹500</span><span class="bonus">+5% Bonus</span></div>
+                <div class="quick-btn" onclick="selectAmount(1000)"><span class="amt">₹1,000</span><span class="bonus">+5% Bonus</span></div>
+                <div class="quick-btn" onclick="selectAmount(1500)"><span class="amt">₹1,500</span><span class="bonus">+5% Bonus</span></div>
+                <div class="quick-btn" onclick="selectAmount(2000)"><span class="amt">₹2,000</span><span class="bonus">+5% Bonus</span></div>
+            </div>
+
+            <div class="section-box-title">PAY VIA UPI APPS</div>
+            <div class="upi-apps-grid">
+                <button class="upi-app-btn" onclick="payViaUPIIntent('gpay')">🟢 GPay</button>
+                <button class="upi-app-btn" onclick="payViaUPIIntent('phonepe')">🟣 PhonePe</button>
+                <button class="upi-app-btn" onclick="payViaUPIIntent('paytm')">🔵 Paytm</button>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div class="qr-box">
+                    <img id="adminQrImage" src="" alt="Admin QR Code">
+                </div>
+                <p id="displayUpiIdText" style="font-size: 13px; color: #d4af37; margin-top: 5px; font-weight: bold;">Loading UPI Details...</p>
+                <p style="font-size: 11px; color: #888;">Scan QR Code or Pay via UPI ID</p>
+            </div>
+
+            <button class="proceed-btn" onclick="proceedToPay()">PROCEED TO PAY →</button>
+
+            <div class="section-box-title">UPLOAD PAYMENT SCREENSHOT</div>
+            <div class="input-card">
+                <input type="file" id="fundScreenshot" accept="image/*" style="font-size: 12px; padding: 6px;">
+            </div>
+
+            <button class="proceed-btn" style="background:#25d366; color:#fff;" onclick="submitAddFundRequest()">SUBMIT FUND & SCREENSHOT</button>
+        </main>
+    </div>
+
+    <!-- WITHDRAW POINTS VIEW -->
+    <div id="withdrawPointsView" class="sub-page-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo">WITHDRAW POINTS</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+        <main class="container">
+            <div class="section-box-title">WITHDRAW AMOUNT</div>
+            <div class="input-card">
+                <input type="number" id="withdrawAmountInput" placeholder="Enter amount...">
+            </div>
+            <div class="section-box-title">PAYMENT MODE</div>
+            <div class="payment-modes">
+                <div class="mode-card active" id="modeImps" onclick="setPaymentMode('IMPS')"><span>IMPS</span></div>
+                <div class="mode-card" id="modePaytm" onclick="setPaymentMode('Paytm')"><span>Paytm</span></div>
+                <div class="mode-card" id="modePhonepe" onclick="setPaymentMode('PhonePe')"><span>PhonePe</span></div>
+            </div>
+            <div id="dynamicWithdrawFields"></div>
+            <button class="proceed-btn" onclick="submitWithdrawalRequest()">SUBMIT WITHDRAWAL REQUEST</button>
+
+            <!-- Persistent Admin Payout Proof Box -->
+            <div id="userPayoutProofContainer" style="display:none; margin-top:20px; background:#1a1a1a; border:2px solid #4caf50; padding:15px; border-radius:10px; text-align:center;">
+                <h3 style="color:#4caf50; margin-bottom:8px;">✅ Withdrawal Approved & Paid</h3>
+                <p style="font-size:13px; color:#ccc; margin-bottom:10px;">Admin ne payment bhej diya hai. Proof screenshot niche hai:</p>
+                <img id="userPayoutProofImg" src="" alt="Payment Proof" style="width:160px; height:160px; object-fit:contain; border:1px solid #444; border-radius:6px; background:#fff; margin-bottom:12px;">
+                <br>
+                <button onclick="dismissPayoutProof()" style="background:#b71c1c; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">CLEAR / REMOVE PROOF</button>
+            </div>
+
+            <div class="admin-chat-box">
+                <div class="section-box-title">💬 ADMIN SUPPORT & PAYMENT PROOF CHAT</div>
+                <div class="chat-messages" id="adminChatMessages">
+                    <p style="color:#d4af37;">Admin: Withdrawal request par payment screenshot yahin bheja jayega.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MARKET BIDDING VIEW -->
+    <div id="marketView" class="market-view">
+        <header class="header">
+            <button class="back-btn" onclick="goHome()">&#10094;</button>
+            <div class="logo" id="activeMarketTitle">MARKET</div>
+            <div class="wallet">🪙 ₹0</div>
+        </header>
+
+        <!-- Sub Tabs Header -->
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" onclick="switchBiddingTab('jodi')">JODI</button>
+            <button class="sub-tab-btn" onclick="switchBiddingTab('crossing')">CROSSING</button>
+            <button class="sub-tab-btn" onclick="switchBiddingTab('copypaste')">COPY PASTE</button>
+            <button class="sub-tab-btn" onclick="switchBiddingTab('haruf')">HARUF (ANDAR/BAHAR)</button>
+        </div>
+
+        <main class="container" style="padding-bottom: 110px;">
+            <!-- Tab 1: Jodi -->
+            <div id="tabJodi" class="bidding-tab-content active">
+                <div class="section-box-title">JODI NUMBERS (00 - 99) [Min Bid: ₹5]</div>
+                <div class="jodi-grid" id="jodiGrid"></div>
+            </div>
+
+            <!-- Tab 2: Crossing -->
+            <div id="tabCrossing" class="bidding-tab-content">
+                <div class="section-box-title">CROSSING BIDDING</div>
+                <div class="input-card">
+                    <input type="text" id="crossingNumInput" placeholder="Enter Crossing Numbers (e.g. 1234)">
+                    <input type="number" id="crossingAmtInput" placeholder="Enter Amount (Min ₹5)" oninput="calculateTotal()">
+                    <button class="proceed-btn" onclick="showCustomAlert('क्रॉसिंग बिड सफलतापूर्वक जोड़ी गई!')">ADD CROSSING</button>
+                </div>
+            </div>
+
+            <!-- Tab 3: Copy Paste -->
+            <div id="tabCopyPaste" class="bidding-tab-content">
+                <div class="copy-paste-card">
+                    <div class="section-box-title" style="margin-bottom: 12px;">COPY PASTE</div>
+                    <div class="copy-paste-row">
+                        <input type="text" id="cpNumInput" placeholder="2-digit number">
+                        <input type="number" id="cpAmtInput" placeholder="Amount (Min ₹5)" oninput="calculateTotal()">
+                    </div>
+                    <div class="radio-group">
+                        <label><input type="radio" name="palti" checked> With Palti</label>
+                        <label><input type="radio" name="palti"> Without Palti</label>
+                    </div>
+                    <button class="proceed-btn" style="margin-bottom: 0;">⊕ ADD NUMBER</button>
+                </div>
+                <div class="table-header-row">
+                    <span>NUMBER</span>
+                    <span>AMOUNT</span>
+                    <span>ACTION</span>
+                </div>
+            </div>
+
+            <!-- Tab 4: Andar / Bahar Haruf -->
+            <div id="tabHaruf" class="bidding-tab-content">
+                <div class="haruf-section-title">ANDAR HARUF [Min Bid: ₹50]</div>
+                <div class="haruf-grid" id="andarHarufGrid"></div>
+
+                <div class="haruf-section-title" style="margin-top: 25px;">BAHAR HARUF [Min Bid: ₹50]</div>
+                <div class="haruf-grid" id="baharHarufGrid"></div>
+            </div>
+        </main>
+
+        <footer class="bidding-footer">
+            <div class="total-bid-text">TOTAL: <span id="totalBidAmount">₹0</span></div>
+            <button class="place-order-btn" onclick="placeOrder()">PLACE ORDER</button>
+        </footer>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item" onclick="openExternalLink()"><span>🏆</span><br>Results</button>
+        <button class="nav-item" onclick="showHistory()"><span>📜</span><br>History</button>
+        <button class="nav-item active" onclick="goHome()"><span>🏠</span><br>Home</button>
+        <button class="nav-item" onclick="openExternalLink()"><span>📊</span><br>Chart</button>
+        <button class="nav-item" onclick="showReferEarn()"><span>↗️</span><br>Share</button>
+    </nav>
+
+    <script>
+        // Firebase Configuration Integration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCz-hJxuNnIZcYQhkS1Etshv1C_dhKMSTY",
+            authDomain: "royal-satta-1993.firebaseapp.com",
+            projectId: "royal-satta-1993",
+            storageBucket: "royal-satta-1993.firebasestorage.app",
+            messagingSenderId: "565178922133",
+            appId: "1:565178922133:web:4ef7e5c32d01b95589579c"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        const ADMIN_CONFIG = {
+            whatsappNumber: "8076010690",
+            telegramLink: "https://telegram.org",
+            resultsChartUrl: "https://share.google/uimwE99ysjKlxQqWn",
+            upiId: "admin@upi",
+            upiName: "RoyalSatta",
+            qrCodeApiUrl: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=",
+            marqueeText: "🔥 रॉयल सट्टा 1993 में आपका स्वागत है! Jodi Rate: 10 ka 950 | Haruf Rate: 10 ka 95 🔥",
+            popupText: "रॉयल सट्टा 1993 में आपका स्वागत है!"
+        };
+
+        const FAST2SMS_API_KEY = "MjGUr6F3svlqhiWAeRZ5dDuPnkLE1O4afwoKQI2yXC8VpcHmg0pNwZhEGFgcICBtiy41Oz5ljkbxKPaV";
+
+        let currentUserPhone = localStorage.getItem('royal_logged_phone') || "";
+        let generatedOtpCode = "";
+        let userWalletBalance = 0;
+        let userName = "Royal User";
+        let currentActiveMarket = "";
+        let selectedWithdrawMode = "IMPS";
+        let activeTab = 'jodi';
+        let bidHistoryList = [];
+        let winningHistoryList = [];
+        let lenDenHistoryList = [];
+        let adminChatList = [];
+        let supportChatList = [
+            { sender: 'admin', text: 'नमस्ते! कृपया बताएं हम आपकी क्या सहायता कर सकते हैं?' }
+        ];
+
+        let dynamicQrBase64 = "";
+
+        let marketResults = {
+            "DELHI BAZAR": "--",
+            "SRIGANESH": "--",
+            "FARIDABAD": "--",
+            "DHAN LAXMI": "--",
+            "786": "--",
+            "GHAZIABAD": "--",
+            "GALI": "--",
+            "DESAWER": "--"
+        };
+
+        function showCustomAlert(msg) {
+            document.getElementById('customPopupText').innerText = msg;
+            document.getElementById('customPopupOverlay').style.display = 'flex';
+        }
+
+        function closeCustomPopup() {
+            document.getElementById('customPopupOverlay').style.display = 'none';
+        }
+
+        function getCurrentDateTime() {
+            let now = new Date();
+            return now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        }
+
+        function updateWalletUI() {
+            let wallets = document.querySelectorAll('.wallet');
+            wallets.forEach(w => w.innerText = '🪙 ₹' + userWalletBalance);
+            if(currentUserPhone) {
+                document.getElementById('sidebarPhoneDisplay').innerText = currentUserPhone;
+            }
+        }
+
+        window.onload = function() {
+            document.getElementById('adminMarqueeText').innerText = ADMIN_CONFIG.marqueeText;
+            document.getElementById('adminPopupText').innerText = ADMIN_CONFIG.popupText;
+
+            if (currentUserPhone) {
+                document.getElementById('authView').style.display = 'none';
+                loadUserData(currentUserPhone);
+                listenUserWithdrawalProof(currentUserPhone);
+            } else {
+                document.getElementById('authView').style.display = 'flex';
+            }
+
+            // Real-time listener for market results and dynamic UPI/QR from Admin Panel
+            startRealtimeListeners();
+
+            renderMarkets();
+            buildBiddingGrids();
+            buildHarufGrids();
+            setPaymentMode('IMPS');
+            renderAdminChat();
+            renderSupportSupportChatIfNeeded();
+        };
+
+        function loadUserData(phone) {
+            db.collection("users").doc(phone).onSnapshot((doc) => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    userWalletBalance = data.wallet || 0;
+                    updateWalletUI();
+                }
+            });
+        }
+
+        // Real-time Firestore Listeners
+        function startRealtimeListeners() {
+            // Results Listener
+            db.collection("Results").onSnapshot((snapshot) => {
+                snapshot.forEach((doc) => {
+                    let marketName = doc.id;
+                    let data = doc.data();
+                    if(data && data.result) {
+                        marketResults[marketName] = data.result;
+                    }
+                });
+                renderMarkets();
+            }, (error) => {
+                console.log("Realtime sync error: ", error);
+            });
+
+            // Dynamic UPI & QR Code Listener from Admin Panel
+            db.collection("settings").doc("upi_config").onSnapshot((doc) => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (data.upiId) {
+                        ADMIN_CONFIG.upiId = data.upiId;
+                        let upiTextEl = document.getElementById('displayUpiIdText');
+                        if (upiTextEl) upiTextEl.innerText = "UPI ID: " + data.upiId;
+                    }
+                    if (data.qrImage) {
+                        dynamicQrBase64 = data.qrImage;
+                        let qrImgEl = document.getElementById('adminQrImage');
+                        if (qrImgEl) qrImgEl.src = data.qrImage;
+                    } else {
+                        dynamicQrBase64 = "";
+                        updateQrCode();
+                    }
+                }
+            });
+        }
+
+        // --- NEW: Persistent Admin Withdrawal Proof Listener ---
+        function listenUserWithdrawalProof(phone) {
+            db.collection("withdraw_requests").where("phone", "==", phone).where("status", "==", "Approved").onSnapshot((snapshot) => {
+                let proofBox = document.getElementById('userPayoutProofContainer');
+                let proofImg = document.getElementById('userPayoutProofImg');
+                let foundProof = false;
+
+                snapshot.forEach((doc) => {
+                    let d = doc.data();
+                    if (d.proofImage && !d.dismissedByUser) {
+                        proofImg.src = d.proofImage;
+                        proofBox.style.display = 'block';
+                        foundProof = true;
+                    }
+                });
+                if(!foundProof) { proofBox.style.display = 'none'; }
+            });
+        }
+
+        function dismissPayoutProof() {
+            db.collection("withdraw_requests").where("phone", "==", currentUserPhone).where("status", "==", "Approved").get().then((snap) => {
+                snap.forEach((doc) => { doc.ref.update({ dismissedByUser: true }); });
+                document.getElementById('userPayoutProofContainer').style.display = 'none';
+            });
+        }
+
+        function sendOtp() {
+            let phone = document.getElementById('loginPhoneInput').value.trim();
+            if(phone.length !== 10) {
+                showCustomAlert('कृपया 10 अंकों का वैध मोबाइल नंबर दर्ज करें!');
+                return;
+            }
+            currentUserPhone = '+91' + phone;
+            generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            let message = `Aapka Royal Satta 1993 login OTP hai: ${generatedOtpCode}`;
+            let targetUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(message)}&language=english&flash=0&numbers=${phone}`;
+
+            fetch(targetUrl, { method: 'GET', mode: 'no-cors' }).catch(err => console.log(err));
+
+            document.getElementById('stepPhone').style.display = 'none';
+            document.getElementById('stepOtp').style.display = 'block';
+            document.getElementById('otpSentMsg').innerText = `Fast2SMS se real OTP number ${phone} par bhej diya gaya hai!`;
+            showCustomAlert('Real OTP successfully bhej diya gaya hai! Apka phone check karein.');
+        }
+
+        function verifyOtp() {
+            let otp = document.getElementById('loginOtpInput').value.trim();
+            if(otp.length < 4) {
+                showCustomAlert('सही OTP दर्ज करें!');
+                return;
+            }
+
+            if(otp === generatedOtpCode) {
+                let formattedPhone = currentUserPhone;
+                localStorage.setItem('royal_logged_phone', formattedPhone);
+                document.getElementById('authView').style.display = 'none';
+                
+                db.collection("users").doc(formattedPhone).set({
+                    phone: formattedPhone,
+                    wallet: 0,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                loadUserData(formattedPhone);
+                listenUserWithdrawalProof(formattedPhone);
+                showCustomAlert('लॉगिन सफलतापूर्वक हो गया है!');
+            } else {
+                showCustomAlert('गलत OTP! कृपया सही OTP दर्ज करें।');
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('royal_logged_phone');
+            location.reload();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebarDrawer').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function openWhatsApp() { window.open(`https://wa.me/91${ADMIN_CONFIG.whatsappNumber}`, '_blank'); }
+        function openTelegram() { window.open(ADMIN_CONFIG.telegramLink, '_blank'); }
+        function openExternalLink() { window.open(ADMIN_CONFIG.resultsChartUrl, '_blank'); }
+        function closeModal() { document.getElementById('offerModal').style.display = 'none'; }
+
+        function copyReferralLink() {
+            let refText = `Royal Satta 1993 join karein! Referral Code: ROYAL1993. Link: ` + window.location.href;
+            navigator.clipboard.writeText(refText);
+            showCustomAlert('रेफरल लिंक सफलतापूर्वक कॉपी हो गया है!');
+        }
+
+        function shareDirectWhatsApp() {
+            let msg = encodeURIComponent("Royal Satta 1993 join karein! Referral Code: ROYAL1993. Link: " + window.location.href);
+            window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+        }
+
+        function hideAllViews() {
+            document.getElementById('homeView').style.display = 'none';
+            document.getElementById('profileView').style.display = 'none';
+            document.getElementById('winningHistoryView').style.display = 'none';
+            document.getElementById('lenDenHistoryView').style.display = 'none';
+            document.getElementById('bankingView').style.display = 'none';
+            document.getElementById('gameRateView').style.display = 'none';
+            document.getElementById('referEarnView').style.display = 'none';
+            document.getElementById('historyView').style.display = 'none';
+            document.getElementById('addPointsView').style.display = 'none';
+            document.getElementById('withdrawPointsView').style.display = 'none';
+            document.getElementById('customerSupportView').style.display = 'none';
+            document.getElementById('marketView').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'flex';
+        }
+
+        function goHome() { hideAllViews(); document.getElementById('homeView').style.display = 'block'; renderMarkets(); }
+        function showProfile() { 
+            hideAllViews(); 
+            document.getElementById('profileView').style.display = 'block'; 
+            document.getElementById('profilePhone').value = currentUserPhone;
+            document.getElementById('profileName').value = userName;
+        }
+        function showWinningHistory() { hideAllViews(); document.getElementById('winningHistoryView').style.display = 'block'; renderWinningHistory(); }
+        
+        function showLenDenHistory() { 
+            hideAllViews(); 
+            document.getElementById('lenDenHistoryView').style.display = 'block'; 
+            fetchLenDenHistoryFromFirestore(); 
+        }
+
+        function fetchLenDenHistoryFromFirestore() {
+            let container = document.getElementById('lenDenListContainer');
+            if(!container) return;
+            container.innerHTML = `<div style="text-align:center; color:#d4af37; padding:20px;">Loading Len-Den History...</div>`;
+
+            if (!currentUserPhone) {
+                container.innerHTML = `<div class="no-history">NO LEN-DEN HISTORY FOUND</div>`;
+                return;
+            }
+
+            db.collection("users").doc(currentUserPhone).collection("len_den")
+              .orderBy("timestamp", "desc")
+              .onSnapshot((snapshot) => {
+                container.innerHTML = '';
+                if (snapshot.empty) {
+                    container.innerHTML = `<div class="no-history">NO LEN-DEN HISTORY FOUND</div>`;
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    let d = doc.data();
+                    let timeStr = d.timestamp ? d.timestamp.toDate().toLocaleString() : 'Just now';
+                    let amountColor = d.type.includes('Debit') || d.type.includes('Withdrawal') ? '#ff5252' : '#4caf50';
+                    let sign = d.type.includes('Debit') || d.type.includes('Withdrawal') ? '-' : '+';
+                    
+                    container.innerHTML += `
+                        <div class="history-card">
+                            <p>Time: <span>${timeStr}</span></p>
+                            <p>Type: <span>${d.type}</span></p>
+                            <p>Amount: <span style="color: ${amountColor};">${sign}₹${d.amount}</span></p>
+                            <p>Wallet Balance After: <span>₹${d.walletAfter !== undefined ? d.walletAfter : '--'}</span></p>
+                        </div>
+                    `;
+                });
+            }, (error) => {
+                console.log("Len-Den fetch error: ", error);
+                container.innerHTML = `<div class="no-history">NO LEN-DEN HISTORY FOUND</div>`;
+            });
+        }
+
+        function showBanking() { hideAllViews(); document.getElementById('bankingView').style.display = 'block'; }
+        function showGameRate() { hideAllViews(); document.getElementById('gameRateView').style.display = 'block'; }
+        function showReferEarn() { hideAllViews(); document.getElementById('referEarnView').style.display = 'block'; }
+        function showCustomerSupport() { hideAllViews(); document.getElementById('customerSupportView').style.display = 'block'; renderSupportChat(); }
+        function showHistory() { hideAllViews(); document.getElementById('historyView').style.display = 'block'; renderHistoryList(); }
+        function showAddPoints() { hideAllViews(); document.getElementById('addPointsView').style.display = 'block'; updateQrCode(); }
+        function showWithdrawPoints() { hideAllViews(); document.getElementById('withdrawPointsView').style.display = 'block'; setPaymentMode('IMPS'); renderAdminChat(); }
+
+        function saveProfile() {
+            let uName = document.getElementById('profileName').value.trim();
+            if(uName) { userName = uName; }
+            showCustomAlert('प्रोफाइल सफलतापूर्वक अपडेट हो गई है!');
+            goHome();
+        }
+
+        function saveBanking() {
+            showCustomAlert('बैंकिंग विवरण सफलतापूर्वक सहेज लिया गया है!');
+            goHome();
+        }
+
+        function selectAmount(amt) {
+            document.getElementById('customAddAmount').value = amt;
+            updateQrCode();
+        }
+
+        function updateQrCode() {
+            let qrImg = document.getElementById('adminQrImage');
+            if (!qrImg) return;
+            if (dynamicQrBase64) {
+                qrImg.src = dynamicQrBase64;
+            } else {
+                let amount = document.getElementById('customAddAmount').value || 100;
+                let upiString = `upi://pay?pa=${ADMIN_CONFIG.upiId}&pn=${ADMIN_CONFIG.upiName}&am=${amount}&cu=INR`;
+                qrImg.src = ADMIN_CONFIG.qrCodeApiUrl + encodeURIComponent(upiString);
+            }
+        }
+
+        function proceedToPay() {
+            let amount = document.getElementById('customAddAmount').value;
+            if(!amount || amount <= 0) { showCustomAlert('कृपया मान्य राशि दर्ज करें!'); return; }
+            window.location.href = `upi://pay?pa=${ADMIN_CONFIG.upiId}&pn=${ADMIN_CONFIG.upiName}&am=${amount}&cu=INR`;
+        }
+
+        function payViaUPIIntent(app) {
+            let amount = document.getElementById('customAddAmount').value;
+            if(!amount || amount <= 0) { showCustomAlert('कृपया मान्य राशि दर्ज करें!'); return; }
+            window.location.href = `upi://pay?pa=${ADMIN_CONFIG.upiId}&pn=${ADMIN_CONFIG.upiName}&am=${amount}&cu=INR`;
+        }
+
+        function setPaymentMode(mode) {
+            selectedWithdrawMode = mode;
+            document.getElementById('modeImps').classList.remove('active');
+            document.getElementById('modePaytm').classList.remove('active');
+            document.getElementById('modePhonepe').classList.remove('active');
+
+            if(mode === 'IMPS') document.getElementById('modeImps').classList.add('active');
+            if(mode === 'Paytm') document.getElementById('modePaytm').classList.add('active');
+            if(mode === 'PhonePe') document.getElementById('modePhonepe').classList.add('active');
+
+            let container = document.getElementById('dynamicWithdrawFields');
+            if(mode === 'IMPS') {
+                container.innerHTML = `
+                    <div class="section-box-title">BANK DETAILS (IMPS)</div>
+                    <div class="input-card">
+                        <input type="text" id="accHolderInput" placeholder="Account Holder Name">
+                        <input type="text" id="bankNameInput" placeholder="Bank Name (Optional)">
+                        <input type="text" id="accNumInput" placeholder="Account Number">
+                        <input type="text" id="ifscInput" placeholder="IFSC Code">
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="section-box-title">${mode.toUpperCase()} DETAILS</div>
+                    <div class="input-card">
+                        <input type="text" id="accHolderInput" placeholder="Account Holder Name">
+                        <input type="text" id="upiNumInput" placeholder="Enter ${mode} Mobile Number or UPI ID">
+                    </div>
+                `;
+            }
+        }
+
+        function sendSupportMessage() {
+            let input = document.getElementById('userSupportMsgInput');
+            let msg = input.value.trim();
+            if(!msg) return;
+
+            supportChatList.push({ sender: 'user', text: msg });
+            input.value = '';
+            renderSupportChat();
+
+            setTimeout(() => {
+                supportChatList.push({ sender: 'admin', text: 'आपका संदेश मिल गया है। हमारी टीम जल्द ही आपसे संपर्क करेगी।' });
+                renderSupportChat();
+            }, 1000);
+        }
+
+        function renderSupportChat() {
+            let box = document.getElementById('customerSupportChatBox');
+            if(!box) return;
+            box.innerHTML = '';
+            supportChatList.forEach(m => {
+                let color = m.sender === 'admin' ? '#d4af37' : '#4caf50';
+                let senderLabel = m.sender === 'admin' ? 'Admin' : 'Aap';
+                box.innerHTML += `
+                    <div class="chat-msg-item" style="border-left-color: ${color};">
+                        <span style="color:${color}; font-weight:bold;">${senderLabel}:</span> ${m.text}
+                    </div>
+                `;
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function renderSupportSupportChatIfNeeded() { renderSupportChat(); }
+
+        function submitAddFundRequest() {
+            let amount = parseInt(document.getElementById('customAddAmount').value);
+            let fileInput = document.getElementById('fundScreenshot');
+            if(!amount || amount <= 0) { showCustomAlert('कृपया मान्य राशि दर्ज करें!'); return; }
+            if(fileInput.files.length === 0) { showCustomAlert('कृपया भुगतान का स्क्रीनशॉट अपलोड करें!'); return; }
+
+            userWalletBalance += amount;
+            db.collection("users").doc(currentUserPhone).update({ wallet: userWalletBalance })
+                .then(() => {
+                    updateWalletUI();
+                    db.collection("users").doc(currentUserPhone).collection("len_den").add({
+                        type: 'Add Fund (Online)', amount: amount, walletAfter: userWalletBalance, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showCustomAlert('फंड सफलतापूर्वक जोड़ दिया गया है!');
+                    goHome();
+                })
+                .catch(err => showCustomAlert('Error: ' + err.message));
+        }
+
+        // --- UPDATED: Withdrawal Request with Wallet Deduction & Firestore Sync ---
+        function submitWithdrawalRequest() {
+            let amount = parseInt(document.getElementById('withdrawAmountInput').value);
+            let holder = document.getElementById('accHolderInput') ? document.getElementById('accHolderInput').value.trim() : "";
+            let acc = document.getElementById('accNumInput') ? document.getElementById('accNumInput').value.trim() : "";
+            let ifsc = document.getElementById('ifscInput') ? document.getElementById('ifscInput').value.trim() : "";
+            let upiMob = document.getElementById('upiNumInput') ? document.getElementById('upiNumInput').value.trim() : "";
+
+            if(!amount || amount <= 0) {
+                showCustomAlert('कृपया निकालने के लिए मान्य राशि दर्ज करें!');
+                return;
+            }
+            if(amount > userWalletBalance) {
+                showCustomAlert('वॉलेट में इतना बैलेंस उपलब्ध नहीं है!');
+                return;
+            }
+
+            let detailsStr = `Mode: ${selectedWithdrawMode} | Holder: ${holder} | Acc/UPI: ${acc || upiMob} | IFSC: ${ifsc}`;
+
+            let balanceBefore = userWalletBalance;
+            userWalletBalance -= amount;
+
+            db.collection("users").doc(currentUserPhone).update({ 
+                wallet: userWalletBalance 
+            }).then(() => {
+                updateWalletUI();
+
+                // Send request to Admin withdrawal tab
+                db.collection("withdraw_requests").add({
+                    phone: currentUserPhone,
+                    amount: amount,
+                    mode: selectedWithdrawMode,
+                    details: detailsStr,
+                    status: 'Pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Add to user Len-Den history
+                db.collection("users").doc(currentUserPhone).collection("len_den").add({
+                    type: `Withdrawal Request (${selectedWithdrawMode})`,
+                    amount: amount,
+                    walletAfter: userWalletBalance,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                showCustomAlert('निकासी अनुरोध सफलतापूर्वक एडमिन के पास भेज दिया गया है!');
+                goHome();
+            }).catch(err => {
+                showCustomAlert('Error: ' + err.message);
+            });
+        }
+
+        function renderAdminChat() {
+            let container = document.getElementById('adminChatMessages');
+            if(!container) return;
+            container.innerHTML = '';
+            container.innerHTML = `<p style="color:#d4af37;">Admin: Withdrawal request par payment screenshot yahin bheja jayega.</p>`;
+        }
+
+        const markets = [
+            { name: "DELHI BAZAR", closeTime: "16:30" },
+            { name: "SRIGANESH", closeTime: "16:30" },
+            { name: "FARIDABAD", closeTime: "18:00" },
+            { name: "DHAN LAXMI", closeTime: "19:30" },
+            { name: "786", closeTime: "20:30" },
+            { name: "GHAZIABAD", closeTime: "21:30" },
+            { name: "GALI", closeTime: "23:30" },
+            { name: "DESAWER", closeTime: "04:30" }
+        ];
+
+        function renderMarkets() {
+            const container = document.getElementById('markets-container');
+            if(!container) return;
+            container.innerHTML = '';
+
+            const now = new Date();
+            const currentHours = now.getHours();
+            const currentMinutes = now.getMinutes();
+            const currentTimeValue = currentHours * 60 + currentMinutes;
+
+            let processedMarkets = markets.map(market => {
+                let [closeH, closeM] = market.closeTime.split(':').map(Number);
+                let closeTimeValue = closeH * 60 + closeM;
+                let openTimeValue = 7 * 60;
+
+                let isOpen = false;
+                if (market.name === "DESAWER") {
+                    if (currentTimeValue >= (7 * 60) || currentTimeValue <= (4 * 60 + 30)) { isOpen = true; }
+                } else {
+                    if (currentTimeValue >= openTimeValue && currentTimeValue <= closeTimeValue) { isOpen = true; }
+                }
+                return { ...market, isOpen };
+            });
+
+            processedMarkets.sort((a, b) => (b.isOpen === true) - (a.isOpen === true));
+
+            processedMarkets.forEach(market => {
+                let statusClass = market.isOpen ? 'status-open' : 'status-closed';
+                let statusText = market.isOpen ? 'RUNNING' : 'CLOSED';
+                let currentRes = marketResults[market.name] || "--";
+
+                container.innerHTML += `
+                    <div class="game-card">
+                        <div class="game-header">
+                            <span class="game-title">${market.name}</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="game-time"><span>Open: 07:00 AM</span> | <span>Close: ${market.closeTime}</span></div>
+                        <div class="game-footer-row">
+                            <div class="game-numbers">
+                                <div class="box">${currentRes[0] || '-'}</div>
+                                <div class="box">${currentRes[1] || '-'}</div>
+                            </div>
+                            <button class="card-play-btn" ${market.isOpen ? `onclick="openMarket('${market.name}')"` : `disabled`}>PLAY</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openMarket(marketName) {
+            currentActiveMarket = marketName;
+            hideAllViews();
+            document.getElementById('marketView').style.display = 'block';
+            document.getElementById('activeMarketTitle').innerText = marketName;
+            document.getElementById('bottomNav').style.display = 'none';
+            resetAllInputs();
+            switchBiddingTab('jodi');
+        }
+
+        function resetAllInputs() {
+            document.querySelectorAll('.jodi-bid-input').forEach(i => i.value = '');
+            document.querySelectorAll('.haruf-bid-input').forEach(i => i.value = '');
+            let crossingAmt = document.getElementById('crossingAmtInput');
+            let crossingNum = document.getElementById('crossingNumInput');
+            if(crossingAmt) crossingAmt.value = '';
+            if(crossingNum) crossingNum.value = '';
+            let cpAmt = document.getElementById('cpAmtInput');
+            let cpNum = document.getElementById('cpNumInput');
+            if(cpAmt) cpAmt.value = '';
+            if(cpNum) cpNum.value = '';
+            document.getElementById('totalBidAmount').innerText = '₹0';
+        }
+
+        function switchBiddingTab(tabName) {
+            clearCurrentTabInputs();
+            activeTab = tabName;
+            let tabs = document.querySelectorAll('.sub-tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+
+            let contents = document.querySelectorAll('.bidding-tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+
+            if(tabName === 'jodi') {
+                document.querySelectorAll('.sub-tab-btn')[0].classList.add('active');
+                document.getElementById('tabJodi').classList.add('active');
+            } else if(tabName === 'crossing') {
+                document.querySelectorAll('.sub-tab-btn')[1].classList.add('active');
+                document.getElementById('tabCrossing').classList.add('active');
+            } else if(tabName === 'copypaste') {
+                document.querySelectorAll('.sub-tab-btn')[2].classList.add('active');
+                document.getElementById('tabCopyPaste').classList.add('active');
+            } else if(tabName === 'haruf') {
+                document.querySelectorAll('.sub-tab-btn')[3].classList.add('active');
+                document.getElementById('tabHaruf').classList.add('active');
+            }
+            calculateTotal();
+        }
+
+        function clearCurrentTabInputs() {
+            if(activeTab === 'jodi') {
+                document.querySelectorAll('.jodi-bid-input').forEach(i => i.value = '');
+            } else if(activeTab === 'crossing') {
+                let amt = document.getElementById('crossingAmtInput');
+                let num = document.getElementById('crossingNumInput');
+                if(amt) amt.value = '';
+                if(num) num.value = '';
+            } else if(activeTab === 'copypaste') {
+                let amt = document.getElementById('cpAmtInput');
+                let num = document.getElementById('cpNumInput');
+                if(amt) amt.value = '';
+                if(num) num.value = '';
+            } else if(activeTab === 'haruf') {
+                document.querySelectorAll('.haruf-bid-input').forEach(i => i.value = '');
+            }
+        }
+
+        function buildBiddingGrids() {
+            const jodiGrid = document.getElementById('jodiGrid');
+            if(!jodiGrid) return;
+            jodiGrid.innerHTML = '';
+            for (let i = 0; i <= 99; i++) {
+                let numStr = i < 10 ? '0' + i : '' + i;
+                jodiGrid.innerHTML += `
+                    <div class="jodi-item">
+                        <div class="jodi-num">${numStr}</div>
+                        <input type="number" class="jodi-input jodi-bid-input" placeholder="0" oninput="calculateTotal()">
+                    </div>
+                `;
+            }
+        }
+
+        function buildHarufGrids() {
+            const andarGrid = document.getElementById('andarHarufGrid');
+            const baharGrid = document.getElementById('baharHarufGrid');
+            if(!andarGrid || !baharGrid) return;
+            andarGrid.innerHTML = '';
+            baharGrid.innerHTML = '';
+
+            for (let i = 0; i <= 9; i++) {
+                andarGrid.innerHTML += `
+                    <div class="jodi-item">
+                        <div class="jodi-num">A-${i}</div>
+                        <input type="number" class="jodi-input haruf-bid-input" placeholder="0" oninput="calculateTotal()">
+                    </div>
+                `;
+                baharGrid.innerHTML += `
+                    <div class="jodi-item">
+                        <div class="jodi-num">B-${i}</div>
+                        <input type="number" class="jodi-input haruf-bid-input" placeholder="0" oninput="calculateTotal()">
+                    </div>
+                `;
+            }
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            if (activeTab === 'jodi') {
+                document.querySelectorAll('.jodi-bid-input').forEach(input => { total += parseInt(input.value) || 0; });
+            } else if (activeTab === 'crossing') {
+                let crossingAmt = document.getElementById('crossingAmtInput');
+                if(crossingAmt) total += parseInt(crossingAmt.value) || 0;
+            } else if (activeTab === 'copypaste') {
+                let cpAmt = document.getElementById('cpAmtInput');
+                if(cpAmt) total += parseInt(cpAmt.value) || 0;
+            } else if (activeTab === 'haruf') {
+                document.querySelectorAll('.haruf-bid-input').forEach(input => { total += parseInt(input.value) || 0; });
+            }
+            document.getElementById('totalBidAmount').innerText = '₹' + total;
+        }
+
+        function placeOrder() {
+            let totalBid = 0;
+            let bidsSummary = [];
+            let isValid = true;
+
+            if (activeTab === 'jodi') {
+                document.querySelectorAll('.jodi-bid-input').forEach((input, index) => {
+                    let amt = parseInt(input.value) || 0;
+                    if(amt > 0) {
+                        if(amt < 5) { showCustomAlert('त्रुटि: जोड़ी बिड कम से कम ₹5 की होनी चाहिए!'); isValid = false; return; }
+                        totalBid += amt;
+                        let numStr = index < 10 ? '0' + index : '' + index;
+                        bidsSummary.push({ number: 'J-' + numStr, amount: amt });
+                    }
+                });
+            } else if (activeTab === 'crossing') {
+                let crossingAmt = parseInt(document.getElementById('crossingAmtInput').value) || 0;
+                let crossingNum = document.getElementById('crossingNumInput').value.trim();
+                if(crossingAmt > 0) {
+                    if(crossingAmt < 5) { showCustomAlert('त्रुटि: क्रॉसिंग बिड कम से कम ₹5 की होनी चाहिए!'); isValid = false; return; }
+                    totalBid += crossingAmt;
+                    bidsSummary.push({ number: 'Cross-' + crossingNum, amount: crossingAmt });
+                }
+            } else if (activeTab === 'copypaste') {
+                let cpAmt = parseInt(document.getElementById('cpAmtInput').value) || 0;
+                let cpNum = document.getElementById('cpNumInput').value.trim();
+                if(cpAmt > 0) {
+                    if(cpAmt < 5) { showCustomAlert('त्रुटि: कॉपी-पेस्ट बिड कम से कम ₹5 की होनी चाहिए!'); isValid = false; return; }
+                    totalBid += cpAmt;
+                    bidsSummary.push({ number: 'CP-' + cpNum, amount: cpAmt });
+                }
+            } else if (activeTab === 'haruf') {
+                document.querySelectorAll('.haruf-bid-input').forEach((input, index) => {
+                    let amt = parseInt(input.value) || 0;
+                    if(amt > 0) {
+                        if(amt < 50) { showCustomAlert('त्रुटि: हरफ बिड कम से कम ₹50 की होनी चाहिए!'); isValid = false; return; }
+                        totalBid += amt;
+                        let hType = index < 10 ? 'Andar-' + index : 'Bahar-' + (index - 10);
+                        bidsSummary.push({ number: hType, amount: amt });
+                    }
+                });
+            }
+
+            if(!isValid) return;
+            if(totalBid === 0) { showCustomAlert('कृपया इस सेक्शन में कम से कम एक नंबर पर राशि दर्ज करें!'); return; }
+            if(totalBid > userWalletBalance) { showCustomAlert('अपर्याप्त राशि (No Fund)! वॉलेट में पर्याप्त बैलेंस उपलब्ध नहीं है।'); return; }
+
+            let balanceBefore = userWalletBalance;
+            userWalletBalance -= totalBid;
+
+            db.collection("users").doc(currentUserPhone).update({ wallet: userWalletBalance })
+                .then(() => {
+                    updateWalletUI();
+                    bidsSummary.forEach(b => {
+                        db.collection("bids").add({
+                            phone: currentUserPhone,
+                            market: currentActiveMarket,
+                            number: b.number,
+                            amount: b.amount,
+                            status: 'Pending',
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    });
+
+                    db.collection("users").doc(currentUserPhone).collection("len_den").add({
+                        type: `Bid Placed (${currentActiveMarket})`,
+                        amount: totalBid,
+                        walletAfter: userWalletBalance,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    showCustomAlert('ऑर्डर सफलतापूर्वक प्लेस हो गया है और लाइव डेटाबेस में सेव हो गया है!');
+                    goHome();
+                })
+                .catch(err => showCustomAlert('Error: ' + err.message));
+        }
+
+        function renderHistoryList() {
+            let container = document.getElementById('historyListContainer');
+            if(!container) return;
+            container.innerHTML = `<div class="no-history">BID HISTORY SYNCED VIA FIRESTORE</div>`;
+        }
+
+        function renderWinningHistory() {
+            let container = document.getElementById('winningHistoryContainer');
+            if(!container) return;
+            container.innerHTML = `<div class="no-history">NO WINNING HISTORY FOUND</div>`;
+        }
+    </script>
+</body>
+</html>
